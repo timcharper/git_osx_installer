@@ -1,0 +1,5 @@
+.DS_Store
+*.pkg
+*.dmg
+/git_build
+/Disk\ Image
