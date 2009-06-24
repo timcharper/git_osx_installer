@@ -7,6 +7,7 @@
     <post-install type="none"/>
     <requireAuthorization/>
     <installFrom>/usr/local/git</installFrom>
+    <installTo>/usr/local/git</installTo>
     <flags>
       <followSymbolicLinks/>
     </flags>
