@@ -6,6 +6,10 @@ rm Disk\ Image/*.pkg
 ./build.sh
 
 GIT_VERSION=$(git --version | sed 's/git version //')
+PACKAGE_NAME="git-$GIT_VERSION-intel-leopard"
+IMAGE_FILENAME="git-$GIT_VERSION-intel-leopard.dmg" 
+
+echo $PACKAGE_NAME | pbcopy
 echo "Git version is $GIT_VERSION"
 
 open "Git Installer.pmdoc/"
@@ -17,8 +21,7 @@ read -n 1
 
 printf "$GIT_VERSION" | pbcopy
 
-IMAGE_FILENAME="./git-$GIT_VERSION-intel-leopard.dmg" 
-UNCOMPRESSED_IMAGE_FILENAME="./git-$GIT_VERSION-intel-leopard.uncompressed.dmg"
+UNCOMPRESSED_IMAGE_FILENAME="git-$GIT_VERSION-intel-leopard.uncompressed.dmg"
 hdiutil create $UNCOMPRESSED_IMAGE_FILENAME -srcfolder "Disk Image" -volname "Git $GIT_VERSION Intel Leopard" -ov
 hdiutil convert -format UDZO -o $IMAGE_FILENAME $UNCOMPRESSED_IMAGE_FILENAME
 rm $UNCOMPRESSED_IMAGE_FILENAME
