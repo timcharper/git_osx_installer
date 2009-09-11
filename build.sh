@@ -36,8 +36,8 @@ pushd git_build
     popd
     
     [ ! -f git-manpages-$GIT_VERSION.tar.bz2 ] && curl -O http://www.kernel.org/pub/software/scm/git/git-manpages-$GIT_VERSION.tar.bz2
-    $SUDO mkdir -p $PREFIX/man
-    $SUDO tar xjvo -C $PREFIX/man -f git-manpages-$GIT_VERSION.tar.bz2
+    $SUDO mkdir -p $PREFIX/share/man
+    $SUDO tar xjvo -C $PREFIX/share/man -f git-manpages-$GIT_VERSION.tar.bz2
 popd
 
 # change hardlinks for symlinks
