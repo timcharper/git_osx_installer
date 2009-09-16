@@ -45,3 +45,6 @@ $SUDO ruby UserScripts/symlink_git_hardlinks.rb
 
 # add .DS_Store to default ignore for new repositories
 $SUDO sh -c "echo .DS_Store >> $PREFIX/share/git-core/templates/info/exclude"
+
+[ -d /etc/paths.d ]    && $SUDO cp etc/paths.d/git /etc/paths.d
+[ -d /etc/manpaths.d ] && $SUDO cp etc/manpaths.d/git /etc/manpaths.d
