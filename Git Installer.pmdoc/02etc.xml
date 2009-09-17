@@ -6,7 +6,7 @@
     <description/>
     <post-install type="none"/>
     <requireAuthorization/>
-    <installFrom>/Users/timcharper/projects/GitOSXInstaller/etc</installFrom>
+    <installFrom relative="true" mod="true">etc</installFrom>
     <installTo>/etc</installTo>
     <flags>
       <followSymbolicLinks/>
