@@ -34,6 +34,7 @@
     </f>
     <f n="libexec" o="root" g="wheel" p="16877">
       <f n="git-core" o="root" g="wheel" p="16877">
+        <f n="git" o="root" g="wheel" p="41453"/>
         <f n="git-add" o="root" g="wheel" p="41453"/>
         <f n="git-add--interactive" o="root" g="wheel" p="33261"/>
         <f n="git-am" o="root" g="wheel" p="33261"/>
