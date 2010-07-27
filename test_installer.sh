@@ -1,4 +1,5 @@
 #!/bin/sh
+find /usr/local/git > install_contents_before.txt
 echo "Testing..."
 sudo rm /etc/paths.d/git
 sudo rm /etc/manpaths.d/git
@@ -20,5 +21,15 @@ for file in /etc/paths.d/git /etc/manpaths.d/git /usr/local/git/bin/git "/usr/lo
   fi
 done
 
+find /usr/local/git > install_contents_after.txt
+
+install_diff=$(diff install_contents_before.txt install_contents_after.txt)
+if [ "$install_diff" == "" ]; then
+  echo "No files went missing!"
+else
+  echo "A FEW FILES WENT MISSING!
+$install_diff"
+  exit 1
+fi
 echo "Success!"
 
