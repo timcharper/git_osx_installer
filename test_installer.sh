@@ -31,5 +31,11 @@ else
 $install_diff"
   exit 1
 fi
+
+if (ls -alR /usr/local/git/* | grep `whoami`); then
+  echo "Some user-owned files exist!"
+  exit 1
+fi
+
 echo "Success!"
 
