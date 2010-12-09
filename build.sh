@@ -5,7 +5,7 @@ PREFIX=/usr/local/git
 # Undefine to not use sudo
 SUDO=sudo
 
-echo "Building GIT_VERSION $GIT_VERSION"
+echo "Building GIT_VERSION $GIT_VERSION with arch $ARCH"
 
 $SUDO mv $PREFIX{,_`date +%s`}
 
@@ -26,9 +26,11 @@ pushd git_build
         mv Makefile_tmp Makefile
 
 	# Make fat binaries with ppc/32 bit/64 bit
-        make CFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386" LDFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386" prefix=$PREFIX all
-        make CFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386" LDFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386" prefix=$PREFIX strip
-        $SUDO make CFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386" LDFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386" prefix=$PREFIX install
+        CFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch $ARCH"
+        LDFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch $ARCH"
+        make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all
+        make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" strip
+        $SUDO make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" install
 
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion

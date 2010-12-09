@@ -1,15 +1,1 @@
-<?xml version="1.0"?>
-<pkg-contents spec="1.12">
-  <f n="etc" o="timcharper" g="staff" p="16877" pt="etc" m="false" t="file">
-    <f n="manpaths.d" o="root" g="wheel" p="16877">
-      <f n="git" o="root" g="wheel" p="33204">
-        <mod>mode</mod>
-      </f>
-    </f>
-    <f n="paths.d" o="root" g="wheel" p="16877">
-      <f n="git" o="root" g="wheel" p="33204">
-        <mod>mode</mod>
-      </f>
-    </f>
-  </f>
-</pkg-contents>
+<pkg-contents spec="1.12"><f n="etc" o="root" g="staff" p="16877" pt="/Users/timcharper/projects/GitOSXInstaller/etc" m="false" t="file"><f n="manpaths.d" o="root" g="staff" p="16877"><f n="git" o="root" g="staff" p="33188"><mod>owner</mod></f><mod>owner</mod></f><f n="paths.d" o="root" g="staff" p="16877"><f n="git" o="root" g="staff" p="33188"><mod>owner</mod></f><mod>owner</mod></f><mod>owner</mod></f></pkg-contents>
