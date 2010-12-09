@@ -16,14 +16,14 @@ pushd git_build
     [ ! -d git-$GIT_VERSION ] && tar jxvf git-$GIT_VERSION.tar.bz2
     pushd git-$GIT_VERSION
 
-        rm Makefile_tmp
+        [ -f Makefile_head ] && rm Makefile_head
         # If you're on PPC, you may need to uncomment this line: 
-        # echo "MOZILLA_SHA1=1" >> Makefile_tmp
+        # echo "MOZILLA_SHA1=1" >> Makefile_head
 
         # Tell make to use $PREFIX/lib rather than MacPorts:
-        echo "NO_DARWIN_PORTS=1" >> Makefile_tmp
-        cat Makefile >> Makefile_tmp
-        mv Makefile_tmp Makefile
+        echo "NO_DARWIN_PORTS=1" >> Makefile_head
+        cat Makefile >> Makefile_head
+        mv Makefile_head Makefile
 
 	# Make fat binaries with ppc/32 bit/64 bit
         CFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch $ARCH"
