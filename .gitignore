@@ -2,4 +2,4 @@
 *.pkg
 *.dmg
 /git_build
-/Disk\ Image
+/Disk\ Image/*.dmg
