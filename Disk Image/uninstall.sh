@@ -9,6 +9,7 @@ if [ "$response" == "yes" ]; then
   sudo rm -rf /usr/local/git/
   sudo rm /etc/paths.d/git
   sudo rm /etc/manpaths.d/git
+  sudo pkgutil --forget --pkgs=GitOSX\.Installer\.git[A-Za-z0-9]*\.[a-z]*.pkg
   echo "Uninstalled"
 else
   echo "Aborted"
