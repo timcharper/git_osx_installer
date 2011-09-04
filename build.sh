@@ -26,8 +26,8 @@ pushd git_build
         mv Makefile_head Makefile
 
 	# Make fat binaries with ppc/32 bit/64 bit
-        CFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch $ARCH"
-        LDFLAGS="-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch $ARCH"
+        CFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch $ARCH"
+        LDFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch $ARCH"
         make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all
         make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" strip
         $SUDO make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" install
