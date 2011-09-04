@@ -3,3 +3,4 @@
 *.dmg
 /git_build
 /Disk\ Image/*.dmg
+tmp/
