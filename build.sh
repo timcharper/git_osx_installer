@@ -12,8 +12,8 @@ $SUDO mv $PREFIX{,_`date +%s`}
 mkdir -p git_build
 
 pushd git_build
-    [ ! -f git-$GIT_VERSION.tar.bz2 ] && curl -O http://kernel.org/pub/software/scm/git/git-$GIT_VERSION.tar.bz2
-    [ ! -d git-$GIT_VERSION ] && tar jxvf git-$GIT_VERSION.tar.bz2
+    [ ! -f git-$GIT_VERSION.tar.gz ] && curl -O http://git-core.googlecode.com/files/git-$GIT_VERSION.tar.gz
+    [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
         [ -f Makefile_head ] && rm Makefile_head
