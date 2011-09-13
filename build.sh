@@ -28,9 +28,9 @@ pushd git_build
 	# Make fat binaries with ppc/32 bit/64 bit
         CFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch $ARCH"
         LDFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch $ARCH"
-        make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all
-        make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" strip
-        $SUDO make CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" install
+        make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all
+        make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" strip
+        $SUDO make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" install
 
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion
