@@ -4,9 +4,10 @@ for ARCH in i386 x86_64; do
   # remove old installers
   rm -f Disk\ Image/*.pkg
 
-  ARCH=$ARCH ./build.sh
+  GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed $sed_regexp 's/^.+>v([0-9.]+)<.+$/\1/'`}"
 
-  GIT_VERSION=$(git --version | sed 's/git version //')
+  ARCH=$ARCH ./build.sh $GIT_VERSION
+
   PACKAGE_NAME="git-$GIT_VERSION-$ARCH-snow-leopard"
   echo $PACKAGE_NAME | pbcopy
 
