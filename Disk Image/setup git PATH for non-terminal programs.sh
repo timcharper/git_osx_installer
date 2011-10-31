@@ -26,6 +26,7 @@ append_plist_var() {
     echo "No change to $name in ~/.MacOSX/environment.plist"
   else
     echo "Variable $name in ~/.MacOSX/environment.plist changed from '$current_value' to '$new_value'"
+    echo "You will need to log out of your Mac OS X user account and log back in for changes to take effect."
   fi
 }
 

@@ -29,15 +29,14 @@ to log out of your user account for that to take effect.
 
 UPGRADING
 =========
-Simply download the latest git and install as normal.
+Simply download the latest Git installer and install as normal.
 
 
 
 UNINSTALLING
 ============
-Git installer has you sad? Wipe out /usr/local/git, /etc/paths.d/git,
-and /etc/manpaths.d/git to rid it from your system. Or you can run the
-provided uninstall.sh script.
+Git installer has made you sad? Run the provided uninstall.sh script
+in this disk image.
 
 
 
@@ -56,8 +55,7 @@ version:
 http://www.categorifiedcoder.info/tcltk/
 
 If you have an older version of Tcl / Tk Aqua, you'll benefit from
-upgrading. There have been many usability improvements since the
-version that comes shipped with MacOS X Leopard.
+upgrading.
 
 More information:
 
