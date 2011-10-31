@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi 
 GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed $sed_regexp 's/^.+>v([0-9.]+)<.+$/\1/'`}"
 PREFIX=/usr/local/git
@@ -25,9 +26,8 @@ pushd git_build
         cat Makefile >> Makefile_head
         mv Makefile_head Makefile
 
-	# Make fat binaries with ppc/32 bit/64 bit
-        CFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch $ARCH"
-        LDFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch $ARCH"
+        CFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch i386 -arch x86_64"
+        LDFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch i386 -arch x86_64"
         make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all
         make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" strip
         $SUDO make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" install
@@ -35,6 +35,7 @@ pushd git_build
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion
         $SUDO cp contrib/completion/git-completion.bash $PREFIX/contrib/completion/
+        $SUDO cp perl/private-Error.pm $PREFIX/lib/perl5/site_perl/Error.pm
     popd
     
     [ ! -f git-manpages-$GIT_VERSION.tar.bz2 ] && curl -O http://www.kernel.org/pub/software/scm/git/git-manpages-$GIT_VERSION.tar.bz2
