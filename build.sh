@@ -12,8 +12,10 @@ $SUDO mv $PREFIX{,_`date +%s`}
 
 mkdir -p git_build
 
+DOWNLOAD_LOCATION="http://git-core.googlecode.com/files"
+
 pushd git_build
-    [ ! -f git-$GIT_VERSION.tar.gz ] && curl -O http://git-core.googlecode.com/files/git-$GIT_VERSION.tar.gz
+    [ ! -f git-$GIT_VERSION.tar.gz ] && curl -O $DOWNLOAD_LOCATION/git-$GIT_VERSION.tar.gz
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
@@ -38,9 +40,13 @@ pushd git_build
         $SUDO cp perl/private-Error.pm $PREFIX/lib/perl5/site_perl/Error.pm
     popd
     
-    [ ! -f git-manpages-$GIT_VERSION.tar.bz2 ] && curl -O http://www.kernel.org/pub/software/scm/git/git-manpages-$GIT_VERSION.tar.bz2
+    git_man_archive=git-manpages-$GIT_VERSION.tar.gz
+    [ ! -f $git_man_archive ] && curl -O $DOWNLOAD_LOCATION/$git_man_archive
     $SUDO mkdir -p $PREFIX/share/man
-    $SUDO tar xjvo -C $PREFIX/share/man -f git-manpages-$GIT_VERSION.tar.bz2
+    if ( ! $SUDO tar xzvo -C $PREFIX/share/man -f $git_man_archive ); then
+      echo "Error extracting manpages!!! Maybe download location has changed / failed? Look at `pwd`/$git_man_archive. Remove it and re-run build to attempt redownload."
+      exit 1
+    fi
 popd
 
 # change hardlinks for symlinks
