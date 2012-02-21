@@ -6,7 +6,7 @@ PREFIX=/usr/local/git
 # Undefine to not use sudo
 SUDO=sudo
 
-echo "Building GIT_VERSION $GIT_VERSION with arch $ARCH"
+echo "Building GIT_VERSION $GIT_VERSION"
 
 $SUDO mv $PREFIX{,_`date +%s`}
 
@@ -19,20 +19,10 @@ pushd git_build
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
-        [ -f Makefile_head ] && rm Makefile_head
-        # If you're on PPC, you may need to uncomment this line: 
-        # echo "MOZILLA_SHA1=1" >> Makefile_head
-
-        # Tell make to use $PREFIX/lib rather than MacPorts:
-        echo "NO_DARWIN_PORTS=1" >> Makefile_head
-        cat Makefile >> Makefile_head
-        mv Makefile_head Makefile
-
         CFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch i386 -arch x86_64"
         LDFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch i386 -arch x86_64"
-        make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all
-        make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" strip
-        $SUDO make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" install
+        make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip install
+        # $SUDO make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX"
 
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion

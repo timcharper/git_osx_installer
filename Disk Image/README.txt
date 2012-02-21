@@ -29,15 +29,32 @@ to log out of your user account for that to take effect.
 
 UPGRADING
 =========
-Simply download the latest Git installer and install as normal.
+
+Simply download the latest Git installer, run the provided
+uninstall.sh script, and then install as normal.
 
 
 
 UNINSTALLING
 ============
+
 Git installer has made you sad? Run the provided uninstall.sh script
 in this disk image.
 
+
+
+NOTES ABOUT THIS BUILD
+============
+
+* This build targets Snow Leopard and Lion. It may work on earlier or
+  later versions of OS X.
+
+* Since Mac OS X does not ship with gettext, this build does not
+  include gettext support. If popular demand requests (via the git
+  issue tracker
+  http://code.google.com/p/git-osx-installer/issues/list) the
+  installer may bundle gettext in the future to provide localization
+  support.
 
 
 KNOWN ISSUES
