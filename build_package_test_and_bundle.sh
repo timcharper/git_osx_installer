@@ -8,7 +8,7 @@ GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed
 
 ./build.sh $GIT_VERSION
 
-PACKAGE_NAME="git-$GIT_VERSION-intel-universal-snow-leopard"
+PACKAGE_NAME="git-$GIT_VERSION-intel-universal-leopard"
 echo $PACKAGE_NAME | pbcopy
 
 rm -f Disk\ Image/*.pkg
@@ -18,7 +18,7 @@ UNCOMPRESSED_IMAGE_FILENAME="$PACKAGE_NAME.uncompressed.dmg"
 IMAGE_FILENAME="$PACKAGE_NAME.dmg"
 
 rm -f $UNCOMPRESSED_IMAGE_FILENAME $IMAGE_FILENAME
-hdiutil create $UNCOMPRESSED_IMAGE_FILENAME -srcfolder "Disk Image" -volname "Git $GIT_VERSION Snow Leopard Intel Universal" -ov
+hdiutil create $UNCOMPRESSED_IMAGE_FILENAME -srcfolder "Disk Image" -volname "Git $GIT_VERSION Leopard Intel Universal" -ov
 hdiutil convert -format UDZO -o $IMAGE_FILENAME $UNCOMPRESSED_IMAGE_FILENAME
 rm $UNCOMPRESSED_IMAGE_FILENAME
 
@@ -26,7 +26,7 @@ echo "Testing the installer..."
 
 . test_installer.sh
 
-echo "Git Installer $GIT_VERSION - OS X - Snow Leopard - Intel Universal" | pbcopy
+echo "Git Installer $GIT_VERSION - OS X - Leopard - Intel Universal" | pbcopy
 open "http://code.google.com/p/git-osx-installer/downloads/entry"
 sleep 1
 open "./"

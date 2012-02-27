@@ -19,10 +19,9 @@ pushd git_build
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
-        CFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch i386 -arch x86_64"
-        LDFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch i386 -arch x86_64"
-        make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip install
-        # $SUDO make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX"
+        CFLAGS="-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386 -arch x86_64"
+        LDFLAGS="-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386 -arch x86_64"
+        $SUDO make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip install
 
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion
