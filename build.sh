@@ -22,6 +22,7 @@ pushd git_build
         CFLAGS="-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386 -arch x86_64"
         LDFLAGS="-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386 -arch x86_64"
         $SUDO make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip install
+#$SUDO make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip dist-doc
 
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion
@@ -35,6 +36,8 @@ pushd git_build
     if ( ! $SUDO tar xzvo -C $PREFIX/share/man -f $git_man_archive ); then
       echo "Error extracting manpages!!! Maybe download location has changed / failed? Look at `pwd`/$git_man_archive. Remove it and re-run build to attempt redownload."
       exit 1
+    else
+        $SUDO gzip $PREFIX/share/man/man[1-9]/*
     fi
 popd
 
