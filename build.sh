@@ -1,7 +1,45 @@
 #!/bin/bash
 
-if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi 
-GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed $sed_regexp 's/^.+>v([0-9.]+)<.+$/\1/'`}"
+: << '*#'
+Since using universal binaries generates a huge dmg I'm adding argument parsing
+to the script. This way the arch and the git version can be set with arguments.
+
+This are the allowed options
+    -g: git version
+    -a: architecture
+*#
+
+GIT_VERSION=
+ARCH=
+# : at te beginign avoids raising an error for illegar args
+while getopts ":g:a:" OPT
+do
+    case $OPT in
+        g)
+            GIT_VERSION=$OPTARG
+            ;;
+        a)
+            ARCH=$OPTARG
+            ;;
+    esac
+done
+
+#if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi
+#$GIT_VERSION="${GIT_VERSION:=`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed $sed_regexp 's/^.+>v([0-9.]+)<.+$/\1/'`}"
+#$ARCH="${ARCH:="i386"}"
+
+if [[ -z $GIT_VERSION ]]; then
+    if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi
+    GIT_VERSION=`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed $sed_regexp 's/^.+>v([0-9.]+)<.+$/\1/'`
+    echo "Git version is missing. Using $GIT_VERSION as value"
+fi
+
+if [[ -z $ARCH ]]; then
+    ARCH="`uname -p`"
+    echo "Architecture is missing. Using $ARCH as value."
+fi
+
+
 PREFIX=/usr/local/git
 # Undefine to not use sudo
 SUDO=sudo
@@ -19,8 +57,8 @@ pushd git_build
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
-        CFLAGS="-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386 -arch x86_64"
-        LDFLAGS="-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386 -arch x86_64"
+        CFLAGS="-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch $ARCH"
+        LDFLAGS="-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch $ARCH"
         $SUDO make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip install
 #$SUDO make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip dist-doc
 
