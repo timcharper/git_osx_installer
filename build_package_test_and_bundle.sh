@@ -26,7 +26,7 @@ echo "Testing the installer..."
 
 . test_installer.sh
 
-echo "Git Installer $GIT_VERSION - OS X - Snow Leopard - Intel Universal" | pbcopy
-open "http://code.google.com/p/git-osx-installer/downloads/entry"
-sleep 1
-open "./"
+echo "To upload build, run:"
+echo
+echo "./upload-to-github.rb timcharper timcharper/git-osx-installer Disk\ Image/$PACKAGE_NAME.pkg 'Git Installer $GIT_VERSION - OS X - Snow Leopard - Intel Universal'"
+
