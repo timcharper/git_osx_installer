@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. env.sh
+
 if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi 
 GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed $sed_regexp 's/^.+>v([0-9.]+)<.+$/\1/'`}"
 PREFIX=/usr/local/git
@@ -19,8 +21,8 @@ pushd git_build
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
-        CFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch i386 -arch x86_64"
-        LDFLAGS="-mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch i386 -arch x86_64"
+        CFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
+        LDFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
         make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip install
         # $SUDO make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX"
 

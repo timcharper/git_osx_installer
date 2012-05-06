@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. env.sh
+
 # remove old installers
 rm -f Disk\ Image/*.pkg
 
@@ -12,7 +14,7 @@ PACKAGE_NAME="git-$GIT_VERSION-intel-universal-snow-leopard"
 echo $PACKAGE_NAME | pbcopy
 
 rm -f Disk\ Image/*.pkg
-sudo bash -c "/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker --doc Git\ Installer.pmdoc/ -o Disk\ Image/$PACKAGE_NAME.pkg --title 'Git $GIT_VERSION'"
+sudo bash -c "$PACKAGE_MAKER_APP/Contents/MacOS/PackageMaker --doc Git\ Installer.pmdoc/ -o Disk\ Image/$PACKAGE_NAME.pkg --title 'Git $GIT_VERSION'"
 
 UNCOMPRESSED_IMAGE_FILENAME="$PACKAGE_NAME.uncompressed.dmg"
 IMAGE_FILENAME="$PACKAGE_NAME.dmg"
