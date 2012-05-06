@@ -15,7 +15,12 @@ git to /usr/local/git. Root access is required.
 
 
 
-Step 2 - Run shell script
+Step 2 - Restart bash sessions
+------------------------------
+This include GNU screen sessions, TMUX sessions, etc. If you wish to preserve your precious screen session, just `source /etc/profile` and yo
+
+
+Step 3 - Run shell script
 -------------------------
 This step is optional.
 
