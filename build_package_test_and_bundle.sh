@@ -6,7 +6,7 @@
 rm -f Disk\ Image/*.pkg
 
 if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi
-GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed $sed_regexp 's/^.+>v([0-9.]+)<.+$/\1/'`}"
+GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep "<span class='version'>" | sed $sed_regexp 's/^.+>([0-9.]+)<.+$/\1/'`}"
 
 ./build.sh $GIT_VERSION
 
