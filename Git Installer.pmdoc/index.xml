@@ -1,1 +1,34 @@
-<pkmkdoc spec="1.12"><properties><title>Git</title><build>/Users/timcharper/projects/GitOSXInstaller/Disk Image/git-1.7.3.2-intel-leopard.pkg</build><organization>GitOSX.Installer</organization><userSees ui="both"/><min-target os="3"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><contents><choice title="Git" id="choice1" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="GitOSX.Installer.git.git.pkg"/></choice><choice title="etc" id="choice3" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="GitOSX.Installer.git.etc.pkg"/></choice></contents><resources bg-scale="none" bg-align="topleft"><locale lang="en"/></resources><flags/><item type="file">01git.xml</item><item type="file">02etc.xml</item><mod>properties.title</mod><mod>properties.anywhereDomain</mod><mod>properties.systemDomain</mod></pkmkdoc>
+<pkmkdoc spec="1.12">
+  <properties>
+    <title>Git</title>
+    <build>/Users/timcharper/projects/GitOSXInstaller/Disk
+    Image/git-1.7.3.2-intel-leopard.pkg</build>
+    <organization>GitOSX.Installer</organization>
+    <userSees ui="both" />
+    <min-target os="3" />
+    <domain system="true" />
+  </properties>
+  <distribution>
+    <versions min-spec="1.000000" />
+    <scripts></scripts>
+  </distribution>
+  <contents>
+    <choice title="Git" id="choice1" starts_selected="true"
+    starts_enabled="true" starts_hidden="false">
+      <pkgref id="GitOSX.Installer.git.git.pkg" />
+    </choice>
+    <choice title="etc" id="choice3" starts_selected="true"
+    starts_enabled="true" starts_hidden="false">
+      <pkgref id="GitOSX.Installer.git.etc.pkg" />
+    </choice>
+  </contents>
+  <resources bg-scale="none" bg-align="topleft">
+    <locale lang="en" />
+  </resources>
+  <flags />
+  <item type="file">01git.xml</item>
+  <item type="file">02etc.xml</item>
+  <mod>properties.title</mod>
+  <mod>properties.anywhereDomain</mod>
+  <mod>properties.systemDomain</mod>
+</pkmkdoc>
