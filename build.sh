@@ -29,6 +29,7 @@ pushd git_build
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion
         $SUDO cp contrib/completion/git-completion.bash $PREFIX/contrib/completion/
+        $SUDO cp contrib/completion/git-prompt.sh $PREFIX/contrib/completion/
         $SUDO cp perl/private-Error.pm $PREFIX/lib/perl5/site_perl/Error.pm
     popd
     
