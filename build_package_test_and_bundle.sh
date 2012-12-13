@@ -2,6 +2,8 @@
 
 . env.sh
 
+set -e -o pipefail
+
 # remove old installers
 rm -f Disk\ Image/*.pkg
 

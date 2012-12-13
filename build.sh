@@ -2,6 +2,7 @@
 
 . env.sh
 
+set -e -o pipefail
 if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi 
 GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep "<div id=\"ver\">" | sed $sed_regexp 's/^.+>v([0-9.]+)<.+$/\1/'`}"
 PREFIX=/usr/local/git
@@ -10,7 +11,7 @@ SUDO=sudo
 
 echo "Building GIT_VERSION $GIT_VERSION"
 
-$SUDO mv $PREFIX{,_`date +%s`}
+$SUDO mv $PREFIX{,_`date +%s`} || echo "Git not installed currently"
 
 mkdir -p git_build
 
