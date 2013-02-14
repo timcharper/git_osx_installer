@@ -31,7 +31,15 @@ pushd git_build
         $SUDO mkdir -p $PREFIX/contrib/completion
         $SUDO cp contrib/completion/git-completion.bash $PREFIX/contrib/completion/
         $SUDO cp contrib/completion/git-prompt.sh $PREFIX/contrib/completion/
+
+        # This is needed for Git-Gui, GitK
         $SUDO cp perl/private-Error.pm $PREFIX/lib/perl5/site_perl/Error.pm
+
+        # git-credential-osxkeychain
+        pushd contrib/credential/osxkeychain
+            make
+            $SUDO cp git-credential-osxkeychain $PREFIX/bin/git-credential-osxkeychain
+        popd
     popd
     
     git_man_archive=git-manpages-$GIT_VERSION.tar.gz
@@ -43,6 +51,9 @@ pushd git_build
     fi
 popd
 
+# Copy assets (e.g. system gitconfig)
+rsync -av assets/git/ $PREFIX
+
 # change hardlinks for symlinks
 $SUDO ruby UserScripts/symlink_git_hardlinks.rb
 
@@ -51,5 +62,5 @@ $SUDO sh -c "echo .DS_Store >> $PREFIX/share/git-core/templates/info/exclude"
 
 $SUDO chown -R root:wheel /usr/local/git
 
-[ -d /etc/paths.d ]    && $SUDO cp etc/paths.d/git /etc/paths.d
-[ -d /etc/manpaths.d ] && $SUDO cp etc/manpaths.d/git /etc/manpaths.d
+[ -d /etc/paths.d ]    && $SUDO cp assets/etc/paths.d/git /etc/paths.d
+[ -d /etc/manpaths.d ] && $SUDO cp assets/etc/manpaths.d/git /etc/manpaths.d

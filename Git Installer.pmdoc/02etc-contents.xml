@@ -1,6 +1,6 @@
 <pkg-contents spec="1.12">
   <f n="etc" o="root" g="staff" p="16877"
-  pt="/Users/timcharper/projects/GitOSXInstaller/etc" m="false"
+  pt="assets/etc" m="false"
   t="file">
     <f n="manpaths.d" o="root" g="staff" p="16877">
       <f n="git" o="root" g="staff" p="33188">

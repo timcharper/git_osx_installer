@@ -5,7 +5,7 @@
     <description></description>
     <post-install type="none" />
     <requireAuthorization />
-    <installFrom relative="true" mod="true">etc</installFrom>
+    <installFrom relative="true" mod="true">assets/etc</installFrom>
     <installTo>/etc</installTo>
     <flags>
       <followSymbolicLinks />

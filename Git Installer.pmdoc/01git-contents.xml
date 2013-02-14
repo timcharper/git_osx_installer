@@ -8,6 +8,7 @@
       <f n="git-shell" o="root" g="wheel" p="33261" />
       <f n="git-upload-archive" o="root" g="wheel" p="41453" />
       <f n="git-upload-pack" o="root" g="wheel" p="33261" />
+      <f n="git-credential-osxkeychain" o="root" g="wheel" p="33261" />
       <f n="gitk" o="root" g="wheel" p="33261" />
     </f>
     <f n="contrib" o="root" g="wheel" p="16877">
@@ -15,6 +16,9 @@
         <f n="git-completion.bash" o="root" g="wheel" p="33261" />
         <f n="git-prompt.sh" o="root" g="wheel" p="33261" />
       </f>
+    </f>
+    <f n="etc" o="root" g="wheel" p="16877">
+      <f n="gitconfig" o="root" g="wheel" p="33261" />
     </f>
     <f n="lib" o="root" g="wheel" p="16877">
       <f n="perl5" o="root" g="wheel" p="16877">
