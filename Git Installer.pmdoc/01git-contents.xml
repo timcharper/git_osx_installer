@@ -14,6 +14,7 @@
     <f n="contrib" o="root" g="wheel" p="16877">
       <f n="completion" o="root" g="wheel" p="16877">
         <f n="git-completion.bash" o="root" g="wheel" p="33261" />
+        <f n="git-completion.zsh" o="root" g="wheel" p="33261" />
         <f n="git-prompt.sh" o="root" g="wheel" p="33261" />
       </f>
     </f>
