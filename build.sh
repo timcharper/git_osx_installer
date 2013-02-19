@@ -30,6 +30,7 @@ pushd git_build
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion
         $SUDO cp contrib/completion/git-completion.bash $PREFIX/contrib/completion/
+        $SUDO cp contrib/completion/git-completion.zsh $PREFIX/contrib/completion/
         $SUDO cp contrib/completion/git-prompt.sh $PREFIX/contrib/completion/
 
         # This is needed for Git-Gui, GitK
