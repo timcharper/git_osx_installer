@@ -2,7 +2,7 @@ Git OSX Installer
 =================
 =================
 
-https://github.com/timcharper/git-osx-installer/
+https://github.com/timcharper/git_osx_installer/
 
 
 INSTALLATION
