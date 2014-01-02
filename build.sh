@@ -17,14 +17,19 @@ mkdir -p git_build
 
 DOWNLOAD_LOCATION="http://git-core.googlecode.com/files"
 
+export CFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
+export LDFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
+
+export C_INCLUDE_PATH=/usr/include
+export CPLUS_INCLUDE_PATH=/usr/include
+export LD_LIBRARY_PATH=/usr/lib
+
 pushd git_build
     [ ! -f git-$GIT_VERSION.tar.gz ] && curl -O $DOWNLOAD_LOCATION/git-$GIT_VERSION.tar.gz
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
-        CFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
-        LDFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
-        make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX" all strip install
+        make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix="$PREFIX" all strip install
         # $SUDO make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX"
 
         # contrib
@@ -38,7 +43,7 @@ pushd git_build
 
         # git-credential-osxkeychain
         pushd contrib/credential/osxkeychain
-            make
+            CFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch x86_64" LDFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch x86_64" make
             $SUDO cp git-credential-osxkeychain $PREFIX/bin/git-credential-osxkeychain
         popd
     popd
@@ -50,6 +55,7 @@ pushd git_build
       echo "Error extracting manpages!!! Maybe download location has changed / failed? Look at `pwd`/$git_man_archive. Remove it and re-run build to attempt redownload."
       exit 1
     fi
+    $SUDO chmod -R go+rx $PREFIX/share/man
 popd
 
 # Copy assets (e.g. system gitconfig)
