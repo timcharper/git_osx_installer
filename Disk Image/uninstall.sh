@@ -1,3 +1,4 @@
+#!/bin/bash
 if [ ! -r "/usr/local/git" ]; then
   echo "Git doesn't appear to be installed via this installer.  Aborting"
   exit 1
