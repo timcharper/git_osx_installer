@@ -15,8 +15,6 @@ $SUDO mv $PREFIX{,_`date +%s`} || echo "Git not installed currently"
 
 mkdir -p git_build
 
-DOWNLOAD_LOCATION="http://git-core.googlecode.com/files"
-
 export CFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
 export LDFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
 
@@ -25,7 +23,7 @@ export CPLUS_INCLUDE_PATH=/usr/include
 export LD_LIBRARY_PATH=/usr/lib
 
 pushd git_build
-    [ ! -f git-$GIT_VERSION.tar.gz ] && curl -O $DOWNLOAD_LOCATION/git-$GIT_VERSION.tar.gz
+    [ ! -f git-$GIT_VERSION.tar.gz ] && curl https://codeload.github.com/git/git/tar.gz/v${GIT_VERSION} > git-$GIT_VERSION.tar.gz
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
@@ -48,10 +46,18 @@ pushd git_build
         popd
     popd
     
-    git_man_archive=git-manpages-$GIT_VERSION.tar.gz
-    [ ! -f $git_man_archive ] && curl -O $DOWNLOAD_LOCATION/$git_man_archive
+    GIT_MANPAGES_FOLDER="../git-manpages/.git"
+    echo "-----------------------"
+    echo
+    echo "Please ensure that the folder `pwd`/$GIT_MANPAGES_FOLDER is at version $GIT_VERSION"
+    printf "Press enter:"
+    read
+    echo
     $SUDO mkdir -p $PREFIX/share/man
-    if ( ! $SUDO tar xzvo -C $PREFIX/share/man -f $git_man_archive ); then
+    GIT_MANPAGES_ARCHIVE=git-manpages-$GIT_VERSION.tar.gz
+    git archive --format=tar --remote $GIT_MANPAGES_FOLDER HEAD | gzip > $GIT_MANPAGES_ARCHIVE
+    echo "sudo tar xf <(git archive --format=tar --remote $GIT_MANPAGES_FOLDER HEAD) -C $PREFIX/share/man"
+    if ( ! sudo tar xzf $GIT_MANPAGES_ARCHIVE -C $PREFIX/share/man ); then
       echo "Error extracting manpages!!! Maybe download location has changed / failed? Look at `pwd`/$git_man_archive. Remove it and re-run build to attempt redownload."
       exit 1
     fi
