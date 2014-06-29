@@ -10,6 +10,7 @@ rm -f Disk\ Image/*.pkg
 if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi
 GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep '<span class="version">' -A 1 | tail -n 1 | sed $sed_regexp 's/ *//'`}"
 
+echo $GIT_VERSION
 ./build.sh $GIT_VERSION
 
 PACKAGE_NAME="git-$GIT_VERSION-intel-universal-snow-leopard"

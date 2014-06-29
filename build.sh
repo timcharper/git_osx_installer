@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 . env.sh
 
@@ -15,8 +15,9 @@ $SUDO mv $PREFIX{,_`date +%s`} || echo "Git not installed currently"
 
 mkdir -p git_build
 
-export CFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
-export LDFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch i386 -arch x86_64"
+export TARGET_FLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -DMACOSX_DEPLOYMENT_TARGET=10.6"
+export CFLAGS="$TARGET_FLAGS -arch i386 -arch x86_64"
+export LDFLAGS="$TARGET_FLAGS -arch i386 -arch x86_64"
 
 export C_INCLUDE_PATH=/usr/include
 export CPLUS_INCLUDE_PATH=/usr/include
@@ -41,7 +42,7 @@ pushd git_build
 
         # git-credential-osxkeychain
         pushd contrib/credential/osxkeychain
-            CFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch x86_64" LDFLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -arch x86_64" make
+            CFLAGS="$TARGET_FLAGS -arch x86_64" LDFLAGS="$TARGET_FLAGS -arch x86_64" make
             $SUDO cp git-credential-osxkeychain $PREFIX/bin/git-credential-osxkeychain
         popd
     popd
