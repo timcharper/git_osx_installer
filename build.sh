@@ -76,5 +76,7 @@ $SUDO sh -c "echo .DS_Store >> $PREFIX/share/git-core/templates/info/exclude"
 
 $SUDO chown -R root:wheel /usr/local/git
 
+echo $PREFIX/bin > assets/etc/paths.d/git
+echo $PREFIX/share/man > assets/etc/manpaths.d/git
 [ -d /etc/paths.d ]    && $SUDO cp assets/etc/paths.d/git /etc/paths.d
 [ -d /etc/manpaths.d ] && $SUDO cp assets/etc/manpaths.d/git /etc/manpaths.d
