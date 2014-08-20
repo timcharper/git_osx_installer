@@ -58,7 +58,7 @@ pushd git_build
     GIT_MANPAGES_ARCHIVE=git-manpages-$GIT_VERSION.tar.gz
     git archive --format=tar --remote $GIT_MANPAGES_FOLDER HEAD | gzip > $GIT_MANPAGES_ARCHIVE
     echo "sudo tar xf <(git archive --format=tar --remote $GIT_MANPAGES_FOLDER HEAD) -C $PREFIX/share/man"
-    if ( ! sudo tar xzf $GIT_MANPAGES_ARCHIVE -C $PREFIX/share/man ); then
+    if ( ! $SUDO tar xzf $GIT_MANPAGES_ARCHIVE -C $PREFIX/share/man ); then
       echo "Error extracting manpages!!! Maybe download location has changed / failed? Look at `pwd`/$git_man_archive. Remove it and re-run build to attempt redownload."
       exit 1
     fi
