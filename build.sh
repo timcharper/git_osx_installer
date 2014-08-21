@@ -37,6 +37,7 @@ pushd git_build
         $SUDO cp contrib/completion/git-prompt.sh $PREFIX/contrib/completion/
 
         # This is needed for Git-Gui, GitK
+        $SUDO mkdir -p $PREFIX/lib/perl5/site_perl
         $SUDO cp perl/private-Error.pm $PREFIX/lib/perl5/site_perl/Error.pm
 
         # git-credential-osxkeychain
