@@ -29,7 +29,6 @@ pushd git_build
     pushd git-$GIT_VERSION
 
         make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix="$PREFIX" all strip install
-        # $SUDO make -j32 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" prefix="$PREFIX"
 
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion
@@ -57,7 +56,6 @@ pushd git_build
     $SUDO mkdir -p $PREFIX/share/man
     GIT_MANPAGES_ARCHIVE=git-manpages-$GIT_VERSION.tar.gz
     git archive --format=tar --remote $GIT_MANPAGES_FOLDER HEAD | gzip > $GIT_MANPAGES_ARCHIVE
-    echo "sudo tar xf <(git archive --format=tar --remote $GIT_MANPAGES_FOLDER HEAD) -C $PREFIX/share/man"
     if ( ! $SUDO tar xzf $GIT_MANPAGES_ARCHIVE -C $PREFIX/share/man ); then
       echo "Error extracting manpages!!! Maybe download location has changed / failed? Look at `pwd`/$git_man_archive. Remove it and re-run build to attempt redownload."
       exit 1
