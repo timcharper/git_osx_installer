@@ -10,4 +10,4 @@ finddir() {
 }
 
 PACKAGE_MAKER_APP=$(finddir {/Developer,}/Applications/Utilities/PackageMaker.app)
-SDK_PATH=$(finddir {/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform,}/Developer/SDKs/MacOSX10.6.sdk)
+SDK_PATH=$(finddir {/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform,}/Developer/SDKs/MacOSX10.8.sdk)
