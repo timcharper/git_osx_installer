@@ -56,6 +56,9 @@ pushd git_build
 		popd
     popd
     
+    [ ! -f gitflow-installer.sh ] && curl -L -O https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh
+	$SUDO bash gitflow-installer.sh
+	
     GIT_MANPAGES_FOLDER="../git-manpages/.git"
     echo "-----------------------"
     echo
