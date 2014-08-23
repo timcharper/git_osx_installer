@@ -4,3 +4,4 @@
 /git_build
 /Disk\ Image/*.dmg
 tmp/
+gitflow-installer.sh
