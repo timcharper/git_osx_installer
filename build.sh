@@ -45,6 +45,15 @@ pushd git_build
             CFLAGS="$TARGET_FLAGS -arch x86_64" LDFLAGS="$TARGET_FLAGS -arch x86_64" make
             $SUDO cp git-credential-osxkeychain $PREFIX/bin/git-credential-osxkeychain
         popd
+        
+        pushd contrib/subtree
+        	CFLAGS="$TARGET_FLAGS -arch x86_64" LDFLAGS="$TARGET_FLAGS -arch x86_64" make prefix="$PREFIX"
+        	CFLAGS="$TARGET_FLAGS -arch x86_64" LDFLAGS="$TARGET_FLAGS -arch x86_64" make prefix="$PREFIX" install
+        	CFLAGS="$TARGET_FLAGS -arch x86_64" LDFLAGS="$TARGET_FLAGS -arch x86_64" make prefix="$PREFIX" install-doc
+#			cp git-subtree ../..
+#			make test
+			$SUDO cp git-subtree $PREFIX/bin/git-subtree
+		popd
     popd
     
     GIT_MANPAGES_FOLDER="../git-manpages/.git"
