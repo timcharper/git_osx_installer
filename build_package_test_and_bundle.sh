@@ -31,4 +31,4 @@ echo "Testing the installer..."
 
 . test_installer.sh
 
-scp $IMAGE_FILENAME timcharper@frs.sourceforge.net:/home/pfs/project/git-osx-installer
+#scp $IMAGE_FILENAME timcharper@frs.sourceforge.net:/home/pfs/project/git-osx-installer
