@@ -1,28 +1,17 @@
-<pkmkdoc spec="1.12"><properties><title>git</title><build>/Users/davide/Desktop/git-2.1.0.pkg</build><organization>org.mexita</organization><userSees ui="both"/><min-target os="3"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><contents><choice title="git core" id="core" starts_selected="true" starts_enabled="false" starts_hidden="false"><pkgref id="org.mexita.git.git-2.pkg"/></choice><choice title="git subtree" id="subtree" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.mexita.git.git-subtree.pkg"/><pkgref id="org.mexita.git.git-subtree-1.pkg"/><pkgref id="org.mexita.git.git-subtree-2.pkg"/></choice><choice title="etc" id="etc" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.mexita.git.git.pkg"/><pkgref id="org.mexita.git.git-1.pkg"/></choice></contents><resources bg-scale="none" bg-align="topleft"><locale lang="en"><resource mime-type="text/rtf" kind="embedded" type="readme"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
-{\fonttbl\f0\fnil\fcharset0 LucidaGrande;}
-{\colortbl;\red255\green255\blue255;}
+<pkmkdoc spec="1.12"><properties><title>git</title><build>/Users/davide/Desktop/git-2.1.0.pkg</build><organization>org.mexita</organization><userSees ui="both"/><min-target os="3"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><contents><choice title="git core" id="core" starts_selected="true" starts_enabled="false" starts_hidden="false"><pkgref id="org.mexita.git.git-2.pkg"/></choice><choice title="git subtree" id="subtree" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.mexita.git.git-subtree.pkg"/><pkgref id="org.mexita.git.git-subtree-1.pkg"/><pkgref id="org.mexita.git.git-subtree-2.pkg"/></choice><choice title="etc" id="etc" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.mexita.git.git.pkg"/><pkgref id="org.mexita.git.git-1.pkg"/></choice><choice title="git flow" id="flow" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.mexita.git.git-flow.pkg"/><pkgref id="org.mexita.git.git-flow-feature.pkg"/><pkgref id="org.mexita.git.git-flow-hotfix.pkg"/><pkgref id="org.mexita.git.git-flow-init.pkg"/><pkgref id="org.mexita.git.git-flow-release.pkg"/><pkgref id="org.mexita.git.git-flow-support.pkg"/><pkgref id="org.mexita.git.git-flow-version.pkg"/><pkgref id="org.mexita.git.gitflow-common.pkg"/><pkgref id="org.mexita.git.gitflow-shFlags.pkg"/></choice></contents><resources bg-scale="none" bg-align="topleft"><locale lang="en"><resource mime-type="text/rtf" kind="embedded" type="readme"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fnil\fcharset0 LucidaGrande;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue233;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\fs26 \cf0 Git OSX Installer\
-=================\
-=================\
+\f0\fs26 \cf0 \
+This installs git to /usr/local/git. Root access is required.\
 \
-INSTALLATION\
-============\
-\
-Step 1 - Install Package\
-------------------------\
-Double-click the package in this disk image to install. This installs\
-git to /usr/local/git. Root access is required.\
-\
-\
-\
-Step 2 - Restart bash sessions\
+Restart bash sessions\
 ------------------------------\
 This include GNU screen sessions, TMUX sessions, etc. If you wish to preserve your precious screen session, just `source /etc/profile` and yo\
 \
 \
-Step 3 - Run shell script\
+Run shell script\
 -------------------------\
 This step is optional.\
 \
@@ -45,23 +34,19 @@ uninstall.sh script, and then install as normal.\
 UNINSTALLING\
 ============\
 \
-Git installer has made you sad? Run the provided uninstall.sh script\
-in this disk image.\
+Git installer has made you sad? \
+Run the provided uninstall.sh script in this disk image.\
 \
 \
 \
 NOTES ABOUT THIS BUILD\
 ============\
 \
-* This build targets Snow Leopard and Lion. It may work on earlier or\
-  later versions of OS X.\
+* This build targets Mountain Lion and Mavericks.\
+It may work on earlier or later versions of OS X.\
 \
-* Since Mac OS X does not ship with gettext, this build does not\
-  include gettext support. If popular demand requests (via the git\
-  issue tracker\
-  http://code.google.com/p/git-osx-installer/issues/list) the\
-  installer may bundle gettext in the future to provide localization\
-  support.\
+* Since Mac OS X does not ship with gettext, this build does not include gettext support.\
+If popular demand requests (via the git issue tracker {\field{\*\fldinst{HYPERLINK "https://github.com/osxt/git_osx_installer/issues"}}{\fldrslt https://github.com/osxt/git_osx_installer/issues}}) the installer may bundle gettext in the future to provide localization support.\
 \
 \
 KNOWN ISSUES\
@@ -71,28 +56,21 @@ KNOWN ISSUES\
 Git GUI / gitk won't open - complain of missing Tcl / Tk Aqua libraries\
 -----------------------------------------------------------------------\
 \
-If you don't already have Tcl/Tk Aqua installed on your computer (most\
-MacOS X installs have it), you will get this error message. To resolve\
-it, simply go to the website for Tcl / Tk Aqua and download the latest\
-version:\
+If you don't already have Tcl/Tk Aqua installed on your computer.\
+Tcl/TkAqua is the most common and attractive build of the Tcl/Tk system for Mac OS X. "Aqua" means the graphical interface has a native OS X look and feel - unlike builds linked to Xorg/X11. Tcl/TkAqua requires MacOS X to run. Support for Classic MacOS was discontinued in 2004. To download a current version of Tcl/Tk, download ActiveTcl from ActiveState{\field{\*\fldinst{HYPERLINK "http://www.activestate.com/"}}{\fldrslt 
+\f1\fs28 \cf2  }}({\field{\*\fldinst{HYPERLINK "http://www.activestate.com/activetcl/downloads"}}{\fldrslt http://www.activestate.com/activetcl/downloads}})\
 \
-http://www.categorifiedcoder.info/tcltk/\
+Tcl/Tk were originally developed on Unix in the late 1980s, and were ported to Windows and Mac OS in the mid-1990s by Sun Microsystems. (The original author of Tcl/Tk, John Ousterhout, was a professor at Berkeley but later left to join Sun.). Apple Computer helped to port Tk to OS X in late 2001. (Because OS X is a variant of Unix, no special effort was required to port Tcl, the command-line scripting component.)\
+(most MacOS X installs have it), you will get this error message.\
 \
-If you have an older version of Tcl / Tk Aqua, you'll benefit from\
-upgrading.\
-\
-More information:\
-\
+http://wiki.tcl.tk/12987\
 http://code.google.com/p/git-osx-installer/issues/detail?id=41\
-\
 \
 \
 Installer hangs during install (and I have iPhone developer tools installed)\
 ----------------------------------------------------------------------------\
 \
-The iPhone developer tools require some kind of gnarly system lock\
-that causes the MacOS X installer system to hang. Just quit the iPhone\
-SDK and try again.\
+The iPhone developer tools require some kind of gnarly system lock that causes the MacOS X installer system to hang. Just quit the iPhone SDK and try again.\
 \
 More information:\
 \
@@ -102,9 +80,7 @@ http://code.google.com/p/git-osx-installer/issues/detail?id=35\
 \
 "git-svn is missing"\
 --------------------\
-Actually, it's probably NOT missing. If you missed the memo, here it\
-is again: the hyphenated syntax for calling git commands is history\
-(since 1.6.0). Invoke "git svn" instead.\
+Actually, it's probably NOT missing. If you missed the memo, here it is again: the hyphenated syntax for calling git commands is history (since 1.6.0). Invoke "git svn" instead.\
 \
 \
 \
@@ -114,12 +90,5 @@ Handling of international characters in file is broken\
 If you would like some validation, read this: http://is.gd/5NAN9.\
 You're not alone.\
 \
-This is not an issue with git, not the installer. Apparently\
-subversion has it too.\
-\
-\
-\
-"Can't locate Term/ReadKey.pm in @INC"\
---------------------------------------\
-That perl library is normally installed on OS X machines. For whatever\
-reason, you're lucky enough not to have it.}]]></resource></locale></resources><flags/><item type="file">01git.xml</item><item type="file">02git.xml</item><item type="file">03git.xml</item><item type="file">04git.xml</item><item type="file">05git.xml</item><item type="file">06git.xml</item><mod>properties.title</mod><mod>properties.customizeOption</mod><mod>properties.anywhereDomain</mod><mod>properties.systemDomain</mod></pkmkdoc>
+This is not an issue with git, not the installer. Apparently subversion has it too.\
+}]]></resource></locale></resources><flags/><item type="file">01git.xml</item><item type="file">02git.xml</item><item type="file">03git.xml</item><item type="file">04git.xml</item><item type="file">05git.xml</item><item type="file">06git.xml</item><item type="file">07git.xml</item><item type="file">08git.xml</item><item type="file">09git.xml</item><item type="file">10git.xml</item><item type="file">11git.xml</item><item type="file">12git.xml</item><item type="file">13git.xml</item><item type="file">14gitflow.xml</item><item type="file">15gitflow.xml</item><mod>properties.title</mod><mod>properties.customizeOption</mod><mod>properties.anywhereDomain</mod><mod>properties.systemDomain</mod></pkmkdoc>
