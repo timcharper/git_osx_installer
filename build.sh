@@ -15,7 +15,8 @@ $SUDO mv $PREFIX{,_`date +%s`} || echo "Git not installed currently"
 
 mkdir -p git_build
 
-export TARGET_FLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -DMACOSX_DEPLOYMENT_TARGET=10.6"
+export TARGET_VERSION="10.6"
+export TARGET_FLAGS="-mmacosx-version-min=$TARGET_VERSION -isysroot $SDK_PATH -DMACOSX_DEPLOYMENT_TARGET=$TARGET_VERSION"
 export CFLAGS="$TARGET_FLAGS -arch i386 -arch x86_64"
 export LDFLAGS="$TARGET_FLAGS -arch i386 -arch x86_64"
 
