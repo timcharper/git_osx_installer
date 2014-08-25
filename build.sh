@@ -47,12 +47,12 @@ pushd git_build
         popd
         
         pushd contrib/subtree
-        	CFLAGS="$TARGET_FLAGS -arch x86_64" LDFLAGS="$TARGET_FLAGS -arch x86_64" make prefix="$PREFIX"
-        	CFLAGS="$TARGET_FLAGS -arch x86_64" LDFLAGS="$TARGET_FLAGS -arch x86_64" make prefix="$PREFIX" install
-        	CFLAGS="$TARGET_FLAGS -arch x86_64" LDFLAGS="$TARGET_FLAGS -arch x86_64" make prefix="$PREFIX" install-doc
+            make prefix="$PREFIX"
+            make prefix="$PREFIX" install
+            make prefix="$PREFIX" install-doc
 #			cp git-subtree ../..
 #			make test
-			$SUDO cp git-subtree $PREFIX/bin/git-subtree
+            $SUDO cp git-subtree $PREFIX/bin/git-subtree
 		popd
     popd
     
