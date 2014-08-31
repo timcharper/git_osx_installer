@@ -13,7 +13,7 @@ GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep '<span class="version">'
 echo $GIT_VERSION
 ./build.sh $GIT_VERSION
 
-PACKAGE_NAME="git-$GIT_VERSION-intel-universal-snow-leopard"
+PACKAGE_NAME="git-$GIT_VERSION-intel-universal-mountain-lion"
 echo $PACKAGE_NAME | pbcopy
 
 rm -f Disk\ Image/*.pkg
@@ -23,7 +23,7 @@ UNCOMPRESSED_IMAGE_FILENAME="$PACKAGE_NAME.uncompressed.dmg"
 IMAGE_FILENAME="$PACKAGE_NAME.dmg"
 
 rm -f $UNCOMPRESSED_IMAGE_FILENAME $IMAGE_FILENAME
-hdiutil create $UNCOMPRESSED_IMAGE_FILENAME -srcfolder "Disk Image" -volname "Git $GIT_VERSION Snow Leopard Intel Universal" -ov
+hdiutil create $UNCOMPRESSED_IMAGE_FILENAME -srcfolder "Disk Image" -volname "Git $GIT_VERSION Mountain Lion Intel Universal" -ov
 hdiutil convert -format UDZO -o $IMAGE_FILENAME $UNCOMPRESSED_IMAGE_FILENAME
 rm $UNCOMPRESSED_IMAGE_FILENAME
 
@@ -31,4 +31,4 @@ echo "Testing the installer..."
 
 . test_installer.sh
 
-scp $IMAGE_FILENAME timcharper@frs.sourceforge.net:/home/pfs/project/git-osx-installer
+#scp $IMAGE_FILENAME timcharper@frs.sourceforge.net:/home/pfs/project/git-osx-installer

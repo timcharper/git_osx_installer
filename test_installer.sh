@@ -1,16 +1,18 @@
 #!/bin/sh
 find /usr/local/git > tmp/install_contents_before.txt
+find /usr/local/bin/git*flow* >> tmp/install_contents_before.txt
 echo "Testing..."
 sudo rm /etc/paths.d/git
 sudo rm /etc/manpaths.d/git
 sudo rm -rf /usr/local/git
+sudo rm -rf /usr/local/bin/git*flow*
 
 echo "OK - running the installer. Come back and press a key when you're done."
 open Disk\ Image/git*.pkg 
 
 read -n 1
 
-for file in /etc/paths.d/git /etc/manpaths.d/git /usr/local/git/bin/git "/usr/local/git/share/git-gui/lib/Git Gui.app/Contents/Info.plist"; do
+for file in /etc/paths.d/git /etc/manpaths.d/git /usr/local/git/bin/git /usr/local/bin/git-flow "/usr/local/git/share/git-gui/lib/Git Gui.app/Contents/Info.plist"; do
   printf "'$file'"
   if [ -f "$file" ]; then
     echo " - exists"
@@ -22,6 +24,7 @@ for file in /etc/paths.d/git /etc/manpaths.d/git /usr/local/git/bin/git "/usr/lo
 done
 
 find /usr/local/git > tmp/install_contents_after.txt
+find /usr/local/bin/git*flow* >> tmp/install_contents_after.txt
 
 install_diff=$(diff tmp/install_contents_before.txt tmp/install_contents_after.txt)
 if [ "$install_diff" == "" ]; then
