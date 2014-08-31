@@ -29,7 +29,8 @@ pushd git_build
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
-        make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix="$PREFIX" all strip install
+        make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix="$PREFIX" all strip
+        $SUDO make -j32 NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix="$PREFIX" install
 
         # contrib
         $SUDO mkdir -p $PREFIX/contrib/completion
@@ -49,10 +50,7 @@ pushd git_build
         
         pushd contrib/subtree
             make prefix="$PREFIX"
-            make prefix="$PREFIX" install
-            make prefix="$PREFIX" install-doc
-#			cp git-subtree ../..
-#			make test
+            $SUDO make prefix="$PREFIX" install install-doc
             $SUDO cp git-subtree $PREFIX/bin/git-subtree
 		popd
     popd
@@ -78,7 +76,7 @@ pushd git_build
 popd
 
 # Copy assets (e.g. system gitconfig)
-rsync -av assets/git/ $PREFIX
+$SUDO rsync -av assets/git/ $PREFIX
 
 # change hardlinks for symlinks
 $SUDO ruby UserScripts/symlink_git_hardlinks.rb
