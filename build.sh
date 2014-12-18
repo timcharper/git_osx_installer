@@ -1,5 +1,6 @@
 #!/bin/bash -x
 
+# Note - GIT_VERSION should not be prefixed with a `v`.
 . env.sh
 
 set -e -o pipefail

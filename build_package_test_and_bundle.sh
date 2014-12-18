@@ -7,8 +7,10 @@ set -e -o pipefail
 # remove old installers
 rm -f Disk\ Image/*.pkg
 
-if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi
-GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep '<span class="version">' -A 1 | tail -n 1 | sed $sed_regexp 's/ *//'`}"
+if [ -z "$GIT_VERSION" ]; then
+  if [ "`uname`" == "Darwin" ]; then sed_regexp="-E"; else sed_regexp="-r"; fi
+  GIT_VERSION="${1:-`curl http://git-scm.com/ 2>&1 | grep '<span class="version">' -A 1 | tail -n 1 | sed $sed_regexp 's/ *//'`}"
+fi
 
 echo $GIT_VERSION
 ./build.sh $GIT_VERSION
