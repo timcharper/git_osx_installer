@@ -20,12 +20,17 @@ export TARGET_FLAGS="-mmacosx-version-min=10.6 -isysroot $SDK_PATH -DMACOSX_DEPL
 export CFLAGS="$TARGET_FLAGS -arch i386 -arch x86_64"
 export LDFLAGS="$TARGET_FLAGS -arch i386 -arch x86_64"
 
+DOWNLOAD_LOCATION="https://www.kernel.org/pub/software/scm/git"
+GIT_MAN_ARCHIVE=git-manpages-$GIT_VERSION.tar.gz
+
 export C_INCLUDE_PATH=/usr/include
 export CPLUS_INCLUDE_PATH=/usr/include
 export LD_LIBRARY_PATH=/usr/lib
 
 pushd git_build
-    [ ! -f git-$GIT_VERSION.tar.gz ] && curl -L https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz > git-$GIT_VERSION.tar.gz
+    [ ! -f git-$GIT_VERSION.tar.gz ] && curl -O $DOWNLOAD_LOCATION/git-$GIT_VERSION.tar.gz
+    [ ! -f $GIT_MAN_ARCHIVE ] && curl -O $DOWNLOAD_LOCATION/$GIT_MAN_ARCHIVE
+
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
@@ -48,18 +53,8 @@ pushd git_build
         popd
     popd
     
-    GIT_MANPAGES_FOLDER="../git-manpages/.git"
-    echo "-----------------------"
-    echo
-    echo "Please ensure that the folder `pwd`/$GIT_MANPAGES_FOLDER is at version $GIT_VERSION"
-    printf "Press enter:"
-    read
-    echo
     $SUDO mkdir -p $PREFIX/share/man
-    GIT_MANPAGES_ARCHIVE=git-manpages-$GIT_VERSION.tar.gz
-    git archive --format=tar --remote $GIT_MANPAGES_FOLDER HEAD | gzip > $GIT_MANPAGES_ARCHIVE
-    echo "sudo tar xf <(git archive --format=tar --remote $GIT_MANPAGES_FOLDER HEAD) -C $PREFIX/share/man"
-    if ( ! $SUDO tar xzf $GIT_MANPAGES_ARCHIVE -C $PREFIX/share/man ); then
+    if ( ! $SUDO tar xzfo -f $GIT_MAN_ARCHIVE -C $PREFIX/share/man ); then
       echo "Error extracting manpages!!! Maybe download location has changed / failed? Look at `pwd`/$git_man_archive. Remove it and re-run build to attempt redownload."
       exit 1
     fi
