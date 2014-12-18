@@ -25,7 +25,7 @@ export CPLUS_INCLUDE_PATH=/usr/include
 export LD_LIBRARY_PATH=/usr/lib
 
 pushd git_build
-    [ ! -f git-$GIT_VERSION.tar.gz ] && curl https://codeload.github.com/git/git/tar.gz/v${GIT_VERSION} > git-$GIT_VERSION.tar.gz
+    [ ! -f git-$GIT_VERSION.tar.gz ] && curl -L https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz > git-$GIT_VERSION.tar.gz
     [ ! -d git-$GIT_VERSION ] && tar zxvf git-$GIT_VERSION.tar.gz
     pushd git-$GIT_VERSION
 
