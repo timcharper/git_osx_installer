@@ -17,11 +17,13 @@ PREFIX := /usr/local/git
 
 DOWNLOAD_LOCATION=https://www.kernel.org/pub/software/scm/git
 
-SUBMAKE := C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" TARGET_FLAGS="$(TARGET_FLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" $(MAKE) -j8 NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix=$(PREFIX)
+SUBMAKE := C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" TARGET_FLAGS="$(TARGET_FLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" $(MAKE) NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix=$(PREFIX)
 
 PACKAGE_SUFFIX := intel-universal-snow-leopard
 
 .PHONY: compile download install install-assets install-bin install-man image package deploy reinstall
+
+CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 
 .SECONDARY:
 
@@ -41,7 +43,7 @@ git_build/git-%/Makefile: git_build/git-%.tar.gz
 	touch $@
 
 git_build/git-%/osx-built: git_build/git-%/Makefile
-	cd git_build/git-$*; $(SUBMAKE) all strip
+	cd git_build/git-$*; $(SUBMAKE) -j $(CORES) all strip
 	touch $@
 
 git_build/git-%/osx-built-keychain: git_build/git-%/Makefile
