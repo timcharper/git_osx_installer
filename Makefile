@@ -64,6 +64,9 @@ git_build/git-%/osx-installed-bin: git_build/git-%/osx-built git_build/git-%/osx
 	$(SUDO) cp git_build/git-$*/contrib/completion/git-completion.zsh $(PREFIX)/contrib/completion/
 	$(SUDO) cp git_build/git-$*/contrib/completion/git-prompt.sh $(PREFIX)/contrib/completion/
 	$(SUDO) cp git_build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain $(PREFIX)/bin/git-credential-osxkeychain
+	# This is needed for Git-Gui, GitK
+	$(SUDO) mkdir -p $(PREFIX)/lib/perl5/site_perl
+	$(SUDO) cp git_build/git-$*/perl/private-Error.pm $(PREFIX)/lib/perl5/site_perl/Error.pm
 	$(SUDO) ruby UserScripts/symlink_git_hardlinks.rb
 	touch $@
 
