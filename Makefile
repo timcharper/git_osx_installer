@@ -4,10 +4,11 @@ C_INCLUDE_PATH := /usr/include
 CPLUS_INCLUDE_PATH := /usr/include
 LD_LIBRARY_PATH := /usr/lib
 
-SDK_PATH := $(shell bin/find-dir /Developer/SDKs/MacOSX10.6.sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
 PACKAGE_MAKER_APP := $(shell bin/find-dir {/Developer,}/Applications/Utilities/PackageMaker.app)
 
-TARGET_FLAGS := -mmacosx-version-min=10.6 -isysroot $(SDK_PATH) -DMACOSX_DEPLOYMENT_TARGET=10.6
+MAC_OSX_VERSION_TARGET := 10.6
+SDK_PATH := $(shell bin/find-dir /Developer/SDKs/MacOSX$(MAC_OSX_VERSION_TARGET).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
+TARGET_FLAGS := -mmacosx-version-min=$(MAC_OSX_VERSION_TARGET) -isysroot $(SDK_PATH) -DMACOSX_DEPLOYMENT_TARGET=$(MAC_OSX_VERSION_TARGET)
 CFLAGS := $(TARGET_FLAGS) -arch i386 -arch x86_64
 LDFLAGS := $(TARGET_FLAGS) -arch i386 -arch x86_64
 
