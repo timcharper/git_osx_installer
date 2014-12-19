@@ -4,7 +4,7 @@ if [ ! -r "/usr/local/git" ]; then
   exit 1
 fi
 echo "This will uninstall git by removing /usr/local/git/**/*, /etc/paths.d/git, /etc/manpaths.d/git"
-printf "Type 'yes' if you sure you wish to continue: "
+printf "Type 'yes' if you are sure you wish to continue: "
 read response
 if [ "$response" == "yes" ]; then
   sudo rm -rf /usr/local/git/
