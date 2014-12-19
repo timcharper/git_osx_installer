@@ -120,7 +120,6 @@ tmp/deployed-%: git-%-$(PACKAGE_SUFFIX).dmg
 	mv $@.working $@
 
 package: disk-image/git-$(GIT_VERSION)-$(PACKAGE_SUFFIX).pkg
-image: git-$(GIT_VERSION)-$(PACKAGE_SUFFIX).dmg
 install-assets: git_build/git-$(GIT_VERSION)/osx-installed-assets
 install-bin: git_build/git-$(GIT_VERSION)/osx-installed-bin
 install-man: git_build/git-$(GIT_VERSION)/osx-installed-man
@@ -144,3 +143,5 @@ reinstall:
 	$(SUDO) rm -rf /usr/local/git
 	rm -f git_build/git-$(GIT_VERSION)/osx-installed*
 	$(MAKE) install
+
+image: git-$(GIT_VERSION)-$(PACKAGE_SUFFIX).dmg
