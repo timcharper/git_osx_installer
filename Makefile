@@ -9,8 +9,8 @@ PACKAGE_MAKER_APP := $(shell bin/find-dir {/Developer,}/Applications/Utilities/P
 MAC_OSX_VERSION_TARGET := 10.6
 SDK_PATH := $(shell bin/find-dir /Developer/SDKs/MacOSX$(MAC_OSX_VERSION_TARGET).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
 TARGET_FLAGS := -mmacosx-version-min=$(MAC_OSX_VERSION_TARGET) -isysroot $(SDK_PATH) -DMACOSX_DEPLOYMENT_TARGET=$(MAC_OSX_VERSION_TARGET)
-CFLAGS := $(TARGET_FLAGS) -arch i386 -arch x86_64
-LDFLAGS := $(TARGET_FLAGS) -arch i386 -arch x86_64
+CFLAGS := $(TARGET_FLAGS) -arch x86_64
+LDFLAGS := $(TARGET_FLAGS) -arch x86_64
 
 GIT_SUB_FOLDER := $(shell date +%s)
 PREFIX := /usr/local/git
@@ -19,9 +19,9 @@ DOWNLOAD_LOCATION=https://www.kernel.org/pub/software/scm/git
 
 XML_CATALOG_FILES=$(shell bin/find-file /usr/local/etc/xml/catalog)
 
-SUBMAKE := C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" TARGET_FLAGS="$(TARGET_FLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" $(MAKE) NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix=$(PREFIX)
+SUBMAKE := $(MAKE) C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" TARGET_FLAGS="$(TARGET_FLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix=$(PREFIX)
 
-PACKAGE_SUFFIX := intel-universal-snow-leopard
+PACKAGE_SUFFIX := intel-x86_64-snow-leopard
 
 CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 
@@ -110,7 +110,7 @@ disk-image/git-%-$(PACKAGE_SUFFIX).pkg: disk-image/VERSION-% $(PREFIX)/VERSION-%
 
 git-%-$(PACKAGE_SUFFIX).dmg: disk-image/git-%-$(PACKAGE_SUFFIX).pkg
 	rm -f git-$*-$(PACKAGE_SUFFIX)*.dmg
-	hdiutil create git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg -srcfolder disk-image -volname "Git $* Snow Leopard Intel Universal" -ov
+	hdiutil create git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg -srcfolder disk-image -volname "Git $* Snow Leopard Intel 64-bit" -ov
 	hdiutil convert -format UDZO -o $@ git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg
 	rm -f git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg
 
