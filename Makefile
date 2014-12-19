@@ -17,15 +17,26 @@ PREFIX := /usr/local/git
 
 DOWNLOAD_LOCATION=https://www.kernel.org/pub/software/scm/git
 
+XML_CATALOG_FILES=$(shell bin/find-file /usr/local/etc/xml/catalog)
+
 SUBMAKE := C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" TARGET_FLAGS="$(TARGET_FLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" $(MAKE) NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix=$(PREFIX)
 
 PACKAGE_SUFFIX := intel-universal-snow-leopard
 
-.PHONY: compile download install install-assets install-bin install-man image package deploy reinstall
-
 CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 
+.PHONY: compile download install install-assets install-bin install-man image package deploy reinstall setup
+
 .SECONDARY:
+
+/usr/local/etc/xml/catalog:
+	brew install docbook
+
+/usr/local/bin/xmlto:
+	brew install xmlto
+
+setup: /usr/local/etc/xml/catalog /usr/local/bin/xmlto
+	grep -q docbook-xsl /usr/local/etc/xml/catalog && exit 0 || (echo "You need docbook-xsl installed to build docs; If it is already installed, uninstall and reinstall it"; brew install docbook-xsl)
 
 $(PREFIX)/VERSION-%:
 	[ -d $(PREFIX) ] && $(SUDO) mv $(PREFIX) ./$(GIT_SUB_FOLDER) || echo "Git not installed currently"
@@ -50,6 +61,13 @@ git_build/git-%/osx-built-keychain: git_build/git-%/Makefile
 	cd git_build/git-$*/contrib/credential/osxkeychain; CFLAGS="$(TARGET_FLAGS) -arch x86_64" LDFLAGS="$(TARGET_FLAGS) -arch x86_64" $(MAKE)
 	touch $@
 
+git_build/git-%/osx-built-subtree: git_build/git-%/Makefile | setup
+	cd git_build/git-$*/contrib/subtree; $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" all git-subtree.1
+	touch $@
+
+git_build/git-%/osx-installed-subtree: git_build/git-%/osx-built-subtree
+	cd git_build/git-$*/contrib/subtree; $(SUDO) $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" install install-man
+	touch $@
 
 git_build/git-%/osx-installed-assets: git_build/git-%/osx-installed-bin
 	rsync -av assets/git/ $(PREFIX)
@@ -77,7 +95,7 @@ git_build/git-%/osx-installed-man: git_build/git-manpages-%.tar.gz git_build/git
 	$(SUDO) tar xzfo git_build/git-manpages-$*.tar.gz -C $(PREFIX)/share/man
 	touch $@
 
-git_build/git-%/osx-installed: git_build/git-%/osx-installed-bin git_build/git-%/osx-installed-man git_build/git-%/osx-installed-assets
+git_build/git-%/osx-installed: git_build/git-%/osx-installed-bin git_build/git-%/osx-installed-man git_build/git-%/osx-installed-assets git_build/git-%/osx-installed-subtree
 	$(SUDO) chown -R root:wheel $(PREFIX)
 	$(SUDO) find $(PREFIX) -type d -exec chmod ugo+rx {} \;
 	$(SUDO) find $(PREFIX) -type f -exec chmod ugo+r {} \;
@@ -106,6 +124,7 @@ image: git-$(GIT_VERSION)-$(PACKAGE_SUFFIX).dmg
 install-assets: git_build/git-$(GIT_VERSION)/osx-installed-assets
 install-bin: git_build/git-$(GIT_VERSION)/osx-installed-bin
 install-man: git_build/git-$(GIT_VERSION)/osx-installed-man
+install-subtree: git_build/git-$(GIT_VERSION)/osx-installed-subtree
 
 install: git_build/git-$(GIT_VERSION)/osx-installed
 
