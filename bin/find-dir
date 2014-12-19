@@ -1,0 +1,9 @@
+#!/bin/bash
+for d in $*; do
+  if [ -d "$d" ]; then
+    echo $d
+    exit 0
+  fi
+done
+echo "Unable to find any of $*" 1>&2
+exit 1

@@ -2,5 +2,6 @@
 *.pkg
 *.dmg
 /git_build
-/Disk\ Image/*.dmg
+disk-image/*.dmg
+disk-image/VERSION-*
 tmp/

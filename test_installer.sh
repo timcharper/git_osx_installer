@@ -6,7 +6,7 @@ sudo rm /etc/manpaths.d/git
 sudo rm -rf /usr/local/git
 
 echo "OK - running the installer. Come back and press a key when you're done."
-open Disk\ Image/git*.pkg 
+open disk-image/git*.pkg 
 
 read -n 1
 
