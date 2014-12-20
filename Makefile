@@ -26,7 +26,7 @@ PACKAGE_SUFFIX := intel-$(ARCH)-snow-leopard
 
 CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 
-.PHONY: compile download install install-assets install-bin install-man image package deploy reinstall setup
+.PHONY: compile download install install-assets install-bin install-man install-subtree image package deploy reinstall setup
 
 .SECONDARY:
 
@@ -143,8 +143,6 @@ install: git_build/git-$(GIT_VERSION)/osx-installed
 download: git_build/git-$(GIT_VERSION).tar.gz git_build/git-manpages-$(GIT_VERSION).tar.gz
 
 compile: git_build/git-$(GIT_VERSION)/osx-built git_build/git-$(GIT_VERSION)/osx-built-keychain
-
-install-man: install-bin
 
 deploy: tmp/deployed-$(GIT_VERSION)
 
