@@ -9,8 +9,9 @@ PACKAGE_MAKER_APP := $(shell bin/find-dir {/Developer,}/Applications/Utilities/P
 MAC_OSX_VERSION_TARGET := 10.6
 SDK_PATH := $(shell bin/find-dir /Developer/SDKs/MacOSX$(MAC_OSX_VERSION_TARGET).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
 TARGET_FLAGS := -mmacosx-version-min=$(MAC_OSX_VERSION_TARGET) -isysroot $(SDK_PATH) -DMACOSX_DEPLOYMENT_TARGET=$(MAC_OSX_VERSION_TARGET)
-CFLAGS := $(TARGET_FLAGS) -arch x86_64
-LDFLAGS := $(TARGET_FLAGS) -arch x86_64
+ARCH := x86_64
+CFLAGS := $(TARGET_FLAGS) -arch $(ARCH)
+LDFLAGS := $(TARGET_FLAGS) -arch $(ARCH)
 
 GIT_SUB_FOLDER := $(shell date +%s)
 PREFIX := /usr/local/git
@@ -21,7 +22,7 @@ XML_CATALOG_FILES=$(shell bin/find-file /usr/local/etc/xml/catalog)
 
 SUBMAKE := $(MAKE) C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" TARGET_FLAGS="$(TARGET_FLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix=$(PREFIX)
 
-PACKAGE_SUFFIX := intel-x86_64-snow-leopard
+PACKAGE_SUFFIX := intel-$(ARCH)-snow-leopard
 
 CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 
@@ -58,7 +59,9 @@ git_build/git-%/osx-built: git_build/git-%/Makefile
 	touch $@
 
 git_build/git-%/osx-built-keychain: git_build/git-%/Makefile
-	cd git_build/git-$*/contrib/credential/osxkeychain; CFLAGS="$(TARGET_FLAGS) -arch x86_64" LDFLAGS="$(TARGET_FLAGS) -arch x86_64" $(MAKE)
+ifeq ("$(ARCH)", "x86_64")
+	cd git_build/git-$*/contrib/credential/osxkeychain; CFLAGS="$(TARGET_FLAGS) -arch $(ARCH)" LDFLAGS="$(TARGET_FLAGS) -arch $(ARCH)" $(MAKE)
+endif
 	touch $@
 
 git_build/git-%/osx-built-subtree: git_build/git-%/Makefile | setup
@@ -70,6 +73,11 @@ git_build/git-%/osx-installed-subtree: git_build/git-%/osx-built-subtree
 	touch $@
 
 git_build/git-%/osx-installed-assets: git_build/git-%/osx-installed-bin
+	mkdir $(PREFIX)/etc
+	cp assets/git/etc/gitconfig.default $(PREFIX)/etc/gitconfig
+ifeq ("$(ARCH)", "x86_64")
+	cat assets/git/etc/gitconfig.osxkeychain >> $(PREFIX)/etc/gitconfig
+endif
 	rsync -av assets/git/ $(PREFIX)
 	$(SUDO) sh -c "echo .DS_Store >> $(PREFIX)/share/git-core/templates/info/exclude"
 	echo $(PREFIX)/bin > assets/etc/paths.d/git
@@ -80,11 +88,13 @@ git_build/git-%/osx-installed-assets: git_build/git-%/osx-installed-bin
 
 git_build/git-%/osx-installed-bin: git_build/git-%/osx-built git_build/git-%/osx-built-keychain $(PREFIX)/VERSION-%
 	cd git_build/git-$*; $(SUBMAKE) install
+ifeq ("$(ARCH)", "x86_64")
+	$(SUDO) cp git_build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain $(PREFIX)/bin/git-credential-osxkeychain
+endif
 	$(SUDO) mkdir -p $(PREFIX)/contrib/completion
 	$(SUDO) cp git_build/git-$*/contrib/completion/git-completion.bash $(PREFIX)/contrib/completion/
 	$(SUDO) cp git_build/git-$*/contrib/completion/git-completion.zsh $(PREFIX)/contrib/completion/
 	$(SUDO) cp git_build/git-$*/contrib/completion/git-prompt.sh $(PREFIX)/contrib/completion/
-	$(SUDO) cp git_build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain $(PREFIX)/bin/git-credential-osxkeychain
 	# This is needed for Git-Gui, GitK
 	$(SUDO) mkdir -p $(PREFIX)/lib/perl5/site_perl
 	$(SUDO) cp git_build/git-$*/perl/private-Error.pm $(PREFIX)/lib/perl5/site_perl/Error.pm
@@ -110,7 +120,7 @@ disk-image/git-%-$(PACKAGE_SUFFIX).pkg: disk-image/VERSION-% $(PREFIX)/VERSION-%
 
 git-%-$(PACKAGE_SUFFIX).dmg: disk-image/git-%-$(PACKAGE_SUFFIX).pkg
 	rm -f git-$*-$(PACKAGE_SUFFIX)*.dmg
-	hdiutil create git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg -srcfolder disk-image -volname "Git $* Snow Leopard Intel 64-bit" -ov
+	hdiutil create git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg -srcfolder disk-image -volname "Git $* Snow Leopard Intel $(ARCH)" -ov
 	hdiutil convert -format UDZO -o $@ git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg
 	rm -f git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg
 

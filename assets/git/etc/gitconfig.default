@@ -60,6 +60,3 @@
 
 [diff "exif"]
 	textconv = exif
-
-[credential]
-	helper = osxkeychain
