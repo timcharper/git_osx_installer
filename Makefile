@@ -13,7 +13,7 @@ ARCH := x86_64
 CFLAGS := $(TARGET_FLAGS) -arch $(ARCH)
 LDFLAGS := $(TARGET_FLAGS) -arch $(ARCH)
 
-GIT_SUB_FOLDER := $(shell date +%s)
+BAK_FOLDER := $(shell date +%s)
 PREFIX := /usr/local/git
 
 DOWNLOAD_LOCATION=https://www.kernel.org/pub/software/scm/git
@@ -45,7 +45,7 @@ setup: /usr/local/etc/xml/catalog /usr/local/bin/xmlto /usr/local/bin/asciidoc
 
 $(PREFIX)/VERSION-%-$(ARCH):
 	mkdir -p bak
-	[ -d $(PREFIX) ] && $(SUDO) mv $(PREFIX) ./bak/$(GIT_SUB_FOLDER) || echo "Git not installed currently"
+	[ -d $(PREFIX) ] && $(SUDO) mv $(PREFIX) ./bak/$(BAK_FOLDER) || echo "Git not installed currently"
 	rm -f build/git-$*/osx-installed*
 	$(SUDO) mkdir -p $(PREFIX)
 	$(SUDO) chown $(shell whoami) $(PREFIX)
