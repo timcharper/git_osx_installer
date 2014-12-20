@@ -42,41 +42,43 @@ CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 
 setup: /usr/local/etc/xml/catalog /usr/local/bin/xmlto /usr/local/bin/asciidoc
 	grep -q docbook-xsl /usr/local/etc/xml/catalog && exit 0 || (echo "You need docbook-xsl installed to build docs; If it is already installed, uninstall and reinstall it"; brew install docbook-xsl)
-$(PREFIX)/VERSION-%:
-	[ -d $(PREFIX) ] && $(SUDO) mv $(PREFIX) ./$(GIT_SUB_FOLDER) || echo "Git not installed currently"
-	rm -f git_build/git-$*/osx-installed*
+
+$(PREFIX)/VERSION-%-$(ARCH):
+	mkdir -p bak
+	[ -d $(PREFIX) ] && $(SUDO) mv $(PREFIX) ./bak/$(GIT_SUB_FOLDER) || echo "Git not installed currently"
+	rm -f build/git-$*/osx-installed*
 	$(SUDO) mkdir -p $(PREFIX)
 	$(SUDO) chown $(shell whoami) $(PREFIX)
 	touch $@
 
-git_build/%.tar.gz:
-	mkdir -p git_build
-	curl -o git_build/$*.tar.gz.working "$(DOWNLOAD_LOCATION)/$*.tar.gz"
-	mv git_build/$*.tar.gz.working git_build/$*.tar.gz
+build/%.tar.gz:
+	mkdir -p build
+	curl -o build/$*.tar.gz.working "$(DOWNLOAD_LOCATION)/$*.tar.gz"
+	mv build/$*.tar.gz.working build/$*.tar.gz
 
-git_build/git-%/Makefile: git_build/git-%.tar.gz
-	tar xzf git_build/git-$*.tar.gz -C git_build
+build/git-%/Makefile: build/git-%.tar.gz
+	tar xzf build/git-$*.tar.gz -C build
 	touch $@
 
-git_build/git-%/osx-built: git_build/git-%/Makefile
-	cd git_build/git-$*; $(SUBMAKE) -j $(CORES) all strip
+build/git-%/osx-built: build/git-%/Makefile
+	cd build/git-$*; $(SUBMAKE) -j $(CORES) all strip
 	touch $@
 
-git_build/git-%/osx-built-keychain: git_build/git-%/Makefile
+build/git-%/osx-built-keychain: build/git-%/Makefile
 ifeq ("$(ARCH)", "x86_64")
-	cd git_build/git-$*/contrib/credential/osxkeychain; CFLAGS="$(TARGET_FLAGS) -arch $(ARCH)" LDFLAGS="$(TARGET_FLAGS) -arch $(ARCH)" $(MAKE)
+	cd build/git-$*/contrib/credential/osxkeychain; CFLAGS="$(TARGET_FLAGS) -arch $(ARCH)" LDFLAGS="$(TARGET_FLAGS) -arch $(ARCH)" $(MAKE)
 endif
 	touch $@
 
-git_build/git-%/osx-built-subtree: git_build/git-%/Makefile | setup
-	cd git_build/git-$*/contrib/subtree; $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" all git-subtree.1
+build/git-%/osx-built-subtree: build/git-%/Makefile | setup
+	cd build/git-$*/contrib/subtree; $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" all git-subtree.1
 	touch $@
 
-git_build/git-%/osx-installed-subtree: git_build/git-%/osx-built-subtree
-	cd git_build/git-$*/contrib/subtree; $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" install install-man
+build/git-%/osx-installed-subtree: build/git-%/osx-built-subtree
+	cd build/git-$*/contrib/subtree; $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" install install-man
 	touch $@
 
-git_build/git-%/osx-installed-assets: git_build/git-%/osx-installed-bin
+build/git-%/osx-installed-assets: build/git-%/osx-installed-bin
 	mkdir -p $(PREFIX)/etc
 	cp assets/git/etc/gitconfig.default $(PREFIX)/etc/gitconfig
 ifeq ("$(ARCH)", "x86_64")
@@ -89,37 +91,45 @@ endif
 	[ -d /etc/manpaths.d ] && $(SUDO) cp assets/etc/manpaths.d/git /etc/manpaths.d
 	touch $@
 
-git_build/git-%/osx-installed-bin: git_build/git-%/osx-built git_build/git-%/osx-built-keychain $(PREFIX)/VERSION-%
-	cd git_build/git-$*; $(SUBMAKE) install
+build/git-%/osx-installed-bin: build/git-%/osx-built build/git-%/osx-built-keychain $(PREFIX)/VERSION-%-$(ARCH)
+	cd build/git-$*; $(SUBMAKE) install
 ifeq ("$(ARCH)", "x86_64")
-	cp git_build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain $(PREFIX)/bin/git-credential-osxkeychain
+	cp build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain $(PREFIX)/bin/git-credential-osxkeychain
 endif
 	mkdir -p $(PREFIX)/contrib/completion
-	cp git_build/git-$*/contrib/completion/git-completion.bash $(PREFIX)/contrib/completion/
-	cp git_build/git-$*/contrib/completion/git-completion.zsh $(PREFIX)/contrib/completion/
-	cp git_build/git-$*/contrib/completion/git-prompt.sh $(PREFIX)/contrib/completion/
+	cp build/git-$*/contrib/completion/git-completion.bash $(PREFIX)/contrib/completion/
+	cp build/git-$*/contrib/completion/git-completion.zsh $(PREFIX)/contrib/completion/
+	cp build/git-$*/contrib/completion/git-prompt.sh $(PREFIX)/contrib/completion/
 	# This is needed for Git-Gui, GitK
 	mkdir -p $(PREFIX)/lib/perl5/site_perl
-	[ ! -f $(PREFIX)/lib/perl5/site_perl/Error.pm ] && cp git_build/git-$*/perl/private-Error.pm $(PREFIX)/lib/perl5/site_perl/Error.pm || echo done
+	[ ! -f $(PREFIX)/lib/perl5/site_perl/Error.pm ] && cp build/git-$*/perl/private-Error.pm $(PREFIX)/lib/perl5/site_perl/Error.pm || echo done
 	ruby UserScripts/symlink_git_hardlinks.rb
 	touch $@
 
-git_build/git-%/osx-installed-man: git_build/git-manpages-%.tar.gz git_build/git-%/osx-installed-bin
-	tar xzfo git_build/git-manpages-$*.tar.gz -C $(PREFIX)/share/man
+build/git-%/osx-installed-man: build/git-manpages-%.tar.gz build/git-%/osx-installed-bin
+	tar xzfo build/git-manpages-$*.tar.gz -C $(PREFIX)/share/man
 	touch $@
 
-git_build/git-%/osx-installed: git_build/git-%/osx-installed-bin git_build/git-%/osx-installed-man git_build/git-%/osx-installed-assets git_build/git-%/osx-installed-subtree
+build/git-%/osx-installed: build/git-%/osx-installed-bin build/git-%/osx-installed-man build/git-%/osx-installed-assets build/git-%/osx-installed-subtree
 	$(SUDO) chown -R root:wheel $(PREFIX)
 	find $(PREFIX) -type d -exec chmod ugo+rx {} \;
 	find $(PREFIX) -type f -exec chmod ugo+r {} \;
 	touch $@
 
+build/git-%/osx-installed-assert-$(ARCH): build/git-%/osx-installed
+	[ "$$(file build/git-$*/git | cut -f 5 -d' ')" == "$(ARCH)" ]
+ifeq ("$(ARCH)", "x86_64")
+	[ "$$(file build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain | cut -f 5 -d' ')" == "$(ARCH)" ]
+endif
+	touch $@
+
+
 disk-image/VERSION-%:
 	rm -f disk-image/*.pkg disk-image/VERSION-* disk-image/.DS_Store
 	touch "$@"
 
-disk-image/git-%-$(PACKAGE_SUFFIX).pkg: disk-image/VERSION-% $(PREFIX)/VERSION-% git_build/git-%/osx-installed
-	$(SUDO) bash -c "$(PACKAGE_MAKER_APP)/Contents/MacOS/PackageMaker --doc Git\ Installer.pmdoc/ -o disk-image/git-$*-$(PACKAGE_SUFFIX).pkg --title 'Git $*'"
+disk-image/git-%-$(PACKAGE_SUFFIX).pkg: disk-image/VERSION-% $(PREFIX)/VERSION-%-$(ARCH) build/git-%/osx-installed build/git-%/osx-installed-assert-$(ARCH)
+	$(SUDO) bash -c "$(PACKAGE_MAKER_APP)/Contents/MacOS/PackageMaker --doc Git\ Installer.pmdoc/ -o disk-image/git-$*-$(PACKAGE_SUFFIX).pkg --title 'Git $* $(ARCH)'"
 
 git-%-$(PACKAGE_SUFFIX).dmg: disk-image/git-%-$(PACKAGE_SUFFIX).pkg
 	rm -f git-$*-$(PACKAGE_SUFFIX)*.dmg
@@ -132,27 +142,27 @@ tmp/deployed-%: git-%-$(PACKAGE_SUFFIX).dmg
 	scp git-$*-$(PACKAGE_SUFFIX).dmg timcharper@frs.sourceforge.net:/home/pfs/project/git-osx-installer | tee $@.working
 	mv $@.working $@
 
-package: disk-image/git-$(GIT_VERSION)-$(PACKAGE_SUFFIX).pkg
-install-assets: git_build/git-$(GIT_VERSION)/osx-installed-assets
-install-bin: git_build/git-$(GIT_VERSION)/osx-installed-bin
-install-man: git_build/git-$(GIT_VERSION)/osx-installed-man
-install-subtree: git_build/git-$(GIT_VERSION)/osx-installed-subtree
+package: disk-image/git-$(VERSION)-$(PACKAGE_SUFFIX).pkg
+install-assets: build/git-$(VERSION)/osx-installed-assets
+install-bin: build/git-$(VERSION)/osx-installed-bin
+install-man: build/git-$(VERSION)/osx-installed-man
+install-subtree: build/git-$(VERSION)/osx-installed-subtree
 
-install: git_build/git-$(GIT_VERSION)/osx-installed
+install: build/git-$(VERSION)/osx-installed
 
-download: git_build/git-$(GIT_VERSION).tar.gz git_build/git-manpages-$(GIT_VERSION).tar.gz
+download: build/git-$(VERSION).tar.gz build/git-manpages-$(VERSION).tar.gz
 
-compile: git_build/git-$(GIT_VERSION)/osx-built git_build/git-$(GIT_VERSION)/osx-built-keychain
+compile: build/git-$(VERSION)/osx-built build/git-$(VERSION)/osx-built-keychain
 
-deploy: tmp/deployed-$(GIT_VERSION)
+deploy: tmp/deployed-$(VERSION)
 
 clean:
-	$(SUDO) rm -f git_build/git-$(GIT_VERSION)/osx-* /usr/local/git/v$(GIT_VERSION)
-	cd git_build/git-$(GIT_VERSION) && $(SUBMAKE) clean
+	$(SUDO) rm -f build/git-$(VERSION)/osx-* /usr/local/git/VERSION-$(VERSION)
+	cd build/git-$(VERSION) && $(SUBMAKE) clean
 
 reinstall:
-	$(SUDO) rm -rf /usr/local/git
-	rm -f git_build/git-$(GIT_VERSION)/osx-installed*
+	$(SUDO) rm -rf /usr/local/git/VERSION-*
+	rm -f build/git-$(VERSION)/osx-installed*
 	$(MAKE) install
 
-image: git-$(GIT_VERSION)-$(PACKAGE_SUFFIX).dmg
+image: git-$(VERSION)-$(PACKAGE_SUFFIX).dmg
