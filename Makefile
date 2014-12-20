@@ -36,13 +36,17 @@ CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 /usr/local/bin/xmlto:
 	brew install xmlto
 
-setup: /usr/local/etc/xml/catalog /usr/local/bin/xmlto
-	grep -q docbook-xsl /usr/local/etc/xml/catalog && exit 0 || (echo "You need docbook-xsl installed to build docs; If it is already installed, uninstall and reinstall it"; brew install docbook-xsl)
+/usr/local/bin/asciidoc:
+	brew install asciidoc
 
+
+setup: /usr/local/etc/xml/catalog /usr/local/bin/xmlto /usr/local/bin/asciidoc
+	grep -q docbook-xsl /usr/local/etc/xml/catalog && exit 0 || (echo "You need docbook-xsl installed to build docs; If it is already installed, uninstall and reinstall it"; brew install docbook-xsl)
 $(PREFIX)/VERSION-%:
 	[ -d $(PREFIX) ] && $(SUDO) mv $(PREFIX) ./$(GIT_SUB_FOLDER) || echo "Git not installed currently"
 	rm -f git_build/git-$*/osx-installed*
-	mkdir -p $(PREFIX)
+	$(SUDO) mkdir -p $(PREFIX)
+	$(SUDO) chown $(shell whoami) $(PREFIX)
 	touch $@
 
 git_build/%.tar.gz:
@@ -69,17 +73,16 @@ git_build/git-%/osx-built-subtree: git_build/git-%/Makefile | setup
 	touch $@
 
 git_build/git-%/osx-installed-subtree: git_build/git-%/osx-built-subtree
-	cd git_build/git-$*/contrib/subtree; $(SUDO) $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" install install-man
+	cd git_build/git-$*/contrib/subtree; $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" install install-man
 	touch $@
 
 git_build/git-%/osx-installed-assets: git_build/git-%/osx-installed-bin
-	mkdir $(PREFIX)/etc
+	mkdir -p $(PREFIX)/etc
 	cp assets/git/etc/gitconfig.default $(PREFIX)/etc/gitconfig
 ifeq ("$(ARCH)", "x86_64")
 	cat assets/git/etc/gitconfig.osxkeychain >> $(PREFIX)/etc/gitconfig
 endif
-	rsync -av assets/git/ $(PREFIX)
-	$(SUDO) sh -c "echo .DS_Store >> $(PREFIX)/share/git-core/templates/info/exclude"
+	sh -c "echo .DS_Store >> $(PREFIX)/share/git-core/templates/info/exclude"
 	echo $(PREFIX)/bin > assets/etc/paths.d/git
 	echo $(PREFIX)/share/man > assets/etc/manpaths.d/git
 	[ -d /etc/paths.d ]    && $(SUDO) cp assets/etc/paths.d/git /etc/paths.d
@@ -89,26 +92,26 @@ endif
 git_build/git-%/osx-installed-bin: git_build/git-%/osx-built git_build/git-%/osx-built-keychain $(PREFIX)/VERSION-%
 	cd git_build/git-$*; $(SUBMAKE) install
 ifeq ("$(ARCH)", "x86_64")
-	$(SUDO) cp git_build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain $(PREFIX)/bin/git-credential-osxkeychain
+	cp git_build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain $(PREFIX)/bin/git-credential-osxkeychain
 endif
-	$(SUDO) mkdir -p $(PREFIX)/contrib/completion
-	$(SUDO) cp git_build/git-$*/contrib/completion/git-completion.bash $(PREFIX)/contrib/completion/
-	$(SUDO) cp git_build/git-$*/contrib/completion/git-completion.zsh $(PREFIX)/contrib/completion/
-	$(SUDO) cp git_build/git-$*/contrib/completion/git-prompt.sh $(PREFIX)/contrib/completion/
+	mkdir -p $(PREFIX)/contrib/completion
+	cp git_build/git-$*/contrib/completion/git-completion.bash $(PREFIX)/contrib/completion/
+	cp git_build/git-$*/contrib/completion/git-completion.zsh $(PREFIX)/contrib/completion/
+	cp git_build/git-$*/contrib/completion/git-prompt.sh $(PREFIX)/contrib/completion/
 	# This is needed for Git-Gui, GitK
-	$(SUDO) mkdir -p $(PREFIX)/lib/perl5/site_perl
-	$(SUDO) cp git_build/git-$*/perl/private-Error.pm $(PREFIX)/lib/perl5/site_perl/Error.pm
-	$(SUDO) ruby UserScripts/symlink_git_hardlinks.rb
+	mkdir -p $(PREFIX)/lib/perl5/site_perl
+	[ ! -f $(PREFIX)/lib/perl5/site_perl/Error.pm ] && cp git_build/git-$*/perl/private-Error.pm $(PREFIX)/lib/perl5/site_perl/Error.pm || echo done
+	ruby UserScripts/symlink_git_hardlinks.rb
 	touch $@
 
 git_build/git-%/osx-installed-man: git_build/git-manpages-%.tar.gz git_build/git-%/osx-installed-bin
-	$(SUDO) tar xzfo git_build/git-manpages-$*.tar.gz -C $(PREFIX)/share/man
+	tar xzfo git_build/git-manpages-$*.tar.gz -C $(PREFIX)/share/man
 	touch $@
 
 git_build/git-%/osx-installed: git_build/git-%/osx-installed-bin git_build/git-%/osx-installed-man git_build/git-%/osx-installed-assets git_build/git-%/osx-installed-subtree
 	$(SUDO) chown -R root:wheel $(PREFIX)
-	$(SUDO) find $(PREFIX) -type d -exec chmod ugo+rx {} \;
-	$(SUDO) find $(PREFIX) -type f -exec chmod ugo+r {} \;
+	find $(PREFIX) -type d -exec chmod ugo+rx {} \;
+	find $(PREFIX) -type f -exec chmod ugo+r {} \;
 	touch $@
 
 disk-image/VERSION-%:
