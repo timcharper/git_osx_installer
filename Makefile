@@ -9,9 +9,8 @@ PACKAGE_MAKER_APP := $(shell bin/find-dir {/Developer,}/Applications/Utilities/P
 MAC_OSX_VERSION_TARGET := 10.6
 SDK_PATH := $(shell bin/find-dir /Developer/SDKs/MacOSX$(MAC_OSX_VERSION_TARGET).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
 TARGET_FLAGS := -mmacosx-version-min=$(MAC_OSX_VERSION_TARGET) -isysroot $(SDK_PATH) -DMACOSX_DEPLOYMENT_TARGET=$(MAC_OSX_VERSION_TARGET)
-ARCH := x86_64
-CFLAGS := $(TARGET_FLAGS) -arch $(ARCH)
-LDFLAGS := $(TARGET_FLAGS) -arch $(ARCH)
+CFLAGS := $(TARGET_FLAGS) -arch x86_64 -arch i386
+LDFLAGS := $(TARGET_FLAGS) -arch x86_64 -arch i386
 
 BAK_FOLDER := $(shell date +%s)
 PREFIX := /usr/local/git
@@ -22,7 +21,7 @@ XML_CATALOG_FILES=$(shell bin/find-file /usr/local/etc/xml/catalog)
 
 SUBMAKE := $(MAKE) C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" TARGET_FLAGS="$(TARGET_FLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix=$(PREFIX)
 
-PACKAGE_SUFFIX := intel-$(ARCH)-snow-leopard
+PACKAGE_SUFFIX := intel-universal-snow-leopard
 
 CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 
@@ -43,7 +42,7 @@ CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
 setup: /usr/local/etc/xml/catalog /usr/local/bin/xmlto /usr/local/bin/asciidoc
 	grep -q docbook-xsl /usr/local/etc/xml/catalog && exit 0 || (echo "You need docbook-xsl installed to build docs; If it is already installed, uninstall and reinstall it"; brew install docbook-xsl)
 
-$(PREFIX)/VERSION-%-$(ARCH):
+$(PREFIX)/VERSION-%-universal:
 	mkdir -p bak
 	[ -d $(PREFIX) ] && $(SUDO) mv $(PREFIX) ./bak/$(BAK_FOLDER) || echo "Git not installed currently"
 	rm -f build/git-$*/osx-installed*
@@ -65,9 +64,7 @@ build/git-%/osx-built: build/git-%/Makefile
 	touch $@
 
 build/git-%/osx-built-keychain: build/git-%/Makefile
-ifeq ("$(ARCH)", "x86_64")
-	cd build/git-$*/contrib/credential/osxkeychain; CFLAGS="$(TARGET_FLAGS) -arch $(ARCH)" LDFLAGS="$(TARGET_FLAGS) -arch $(ARCH)" $(MAKE)
-endif
+	cd build/git-$*/contrib/credential/osxkeychain; $(SUBMAKE) CFLAGS="$(CFLAGS) -g -O2 -Wall"
 	touch $@
 
 build/git-%/osx-built-subtree: build/git-%/Makefile | setup
@@ -81,9 +78,7 @@ build/git-%/osx-installed-subtree: build/git-%/osx-built-subtree
 build/git-%/osx-installed-assets: build/git-%/osx-installed-bin
 	mkdir -p $(PREFIX)/etc
 	cp assets/git/etc/gitconfig.default $(PREFIX)/etc/gitconfig
-ifeq ("$(ARCH)", "x86_64")
 	cat assets/git/etc/gitconfig.osxkeychain >> $(PREFIX)/etc/gitconfig
-endif
 	sh -c "echo .DS_Store >> $(PREFIX)/share/git-core/templates/info/exclude"
 	echo $(PREFIX)/bin > assets/etc/paths.d/git
 	echo $(PREFIX)/share/man > assets/etc/manpaths.d/git
@@ -91,11 +86,9 @@ endif
 	[ -d /etc/manpaths.d ] && $(SUDO) cp assets/etc/manpaths.d/git /etc/manpaths.d
 	touch $@
 
-build/git-%/osx-installed-bin: build/git-%/osx-built build/git-%/osx-built-keychain $(PREFIX)/VERSION-%-$(ARCH)
+build/git-%/osx-installed-bin: build/git-%/osx-built build/git-%/osx-built-keychain $(PREFIX)/VERSION-%-universal
 	cd build/git-$*; $(SUBMAKE) install
-ifeq ("$(ARCH)", "x86_64")
 	cp build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain $(PREFIX)/bin/git-credential-osxkeychain
-endif
 	mkdir -p $(PREFIX)/contrib/completion
 	cp build/git-$*/contrib/completion/git-completion.bash $(PREFIX)/contrib/completion/
 	cp build/git-$*/contrib/completion/git-completion.zsh $(PREFIX)/contrib/completion/
@@ -116,24 +109,22 @@ build/git-%/osx-installed: build/git-%/osx-installed-bin build/git-%/osx-install
 	find $(PREFIX) -type f -exec chmod ugo+r {} \;
 	touch $@
 
-build/git-%/osx-installed-assert-$(ARCH): build/git-%/osx-installed
-	[ "$$(file build/git-$*/git | cut -f 5 -d' ')" == "$(ARCH)" ]
-ifeq ("$(ARCH)", "x86_64")
-	[ "$$(file build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain | cut -f 5 -d' ')" == "$(ARCH)" ]
-endif
+build/git-%/osx-installed-assert-universal: build/git-%/osx-installed
+	File build/git-$*/git | grep "Mach-O universal binary with 2 architectures"
+	File build/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain | grep "Mach-O universal binary with 2 architectures"
 	touch $@
 
 
-disk-image/VERSION-%:
+disk-image/VERSION-%-universal:
 	rm -f disk-image/*.pkg disk-image/VERSION-* disk-image/.DS_Store
 	touch "$@"
 
-disk-image/git-%-$(PACKAGE_SUFFIX).pkg: disk-image/VERSION-% $(PREFIX)/VERSION-%-$(ARCH) build/git-%/osx-installed build/git-%/osx-installed-assert-$(ARCH)
-	$(SUDO) bash -c "$(PACKAGE_MAKER_APP)/Contents/MacOS/PackageMaker --doc Git\ Installer.pmdoc/ -o disk-image/git-$*-$(PACKAGE_SUFFIX).pkg --title 'Git $* $(ARCH)'"
+disk-image/git-%-$(PACKAGE_SUFFIX).pkg: disk-image/VERSION-%-universal $(PREFIX)/VERSION-%-universal build/git-%/osx-installed build/git-%/osx-installed-assert-universal
+	$(SUDO) bash -c "$(PACKAGE_MAKER_APP)/Contents/MacOS/PackageMaker --doc Git\ Installer.pmdoc/ -o disk-image/git-$*-$(PACKAGE_SUFFIX).pkg --title 'Git $* universal'"
 
 git-%-$(PACKAGE_SUFFIX).dmg: disk-image/git-%-$(PACKAGE_SUFFIX).pkg
 	rm -f git-$*-$(PACKAGE_SUFFIX)*.dmg
-	hdiutil create git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg -srcfolder disk-image -volname "Git $* Snow Leopard Intel $(ARCH)" -ov
+	hdiutil create git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg -srcfolder disk-image -volname "Git $* Snow Leopard Intel Universal" -ov
 	hdiutil convert -format UDZO -o $@ git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg
 	rm -f git-$*-$(PACKAGE_SUFFIX).uncompressed.dmg
 
@@ -157,12 +148,14 @@ compile: build/git-$(VERSION)/osx-built build/git-$(VERSION)/osx-built-keychain
 deploy: tmp/deployed-$(VERSION)
 
 clean:
-	$(SUDO) rm -f build/git-$(VERSION)/osx-* /usr/local/git/VERSION-$(VERSION)
+	$(SUDO) rm -f build/git-$(VERSION)/osx-* /usr/local/git/VERSION-*
 	cd build/git-$(VERSION) && $(SUBMAKE) clean
+	cd build/git-$(VERSION)/contrib/credential/osxkeychain; $(SUBMAKE) clean
+	cd build/git-$(VERSION)/contrib/subtree; $(SUBMAKE) clean
 
 reinstall:
 	$(SUDO) rm -rf /usr/local/git/VERSION-*
 	rm -f build/git-$(VERSION)/osx-installed*
-	$(MAKE) install
+	$(SUBMAKE) install
 
 image: git-$(VERSION)-$(PACKAGE_SUFFIX).dmg
