@@ -73,8 +73,11 @@ vars:
 	brew install asciidoc
 
 
-setup: /usr/local/etc/xml/catalog /usr/local/bin/xmlto /usr/local/bin/asciidoc
+tmp/setup-verified: /usr/local/etc/xml/catalog /usr/local/bin/xmlto /usr/local/bin/asciidoc
 	grep -q docbook-xsl /usr/local/etc/xml/catalog && exit 0 || (echo "You need docbook-xsl installed to build docs; If it is already installed, uninstall and reinstall it"; brew install docbook-xsl)
+	touch	$@
+
+setup: tmp/setup-verified
 
 $(PREFIX)/VERSION-%-$(BUILD_CODE):
 	mkdir -p bak
