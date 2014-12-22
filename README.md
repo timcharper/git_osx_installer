@@ -25,6 +25,10 @@ If your Mac was made on or after 2007, it is a 64-bit machine.
 
 # Changes / Recent updates
 
+## 2014-12-21
+
+Mavericks builds have been published to address issues running `git gui`. Going forward, `Snow Leopard` and `Mavericks` builds will be published.
+
 ## 2014-12-20
 
 32-bit builds for Snow Leopard (and later) are back. These were created on a 64-bit installation of Mac OS X Snow Leopard.
