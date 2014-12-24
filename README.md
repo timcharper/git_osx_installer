@@ -19,15 +19,17 @@ If you are running:
 
 The Snow Leopard builds will work on Mavericks and later, but there are issues running `git gui`.
 
-## 64-bit or 32-bit?
+## It doesn't work. Help!
 
-If your Mac was made on or after 2007, it is a 64-bit machine.
+Scream where you can be heard. File an issue here: https://github.com/timcharper/git_osx_installer/issues
 
 # Changes / Recent updates
 
 ## 2014-12-21
 
 Mavericks builds have been published to address issues running `git gui`. Going forward, `Snow Leopard` and `Mavericks` builds will be published.
+
+Also, the Makefile has been fixed to enable 32-bit builds of the OS X keychain credential helper. Universal builds have returned, reducing one more decision the user has to make when determining the appropriate download version.
 
 ## 2014-12-20
 
