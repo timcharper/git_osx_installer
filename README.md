@@ -23,6 +23,12 @@ The Snow Leopard builds will work on Mavericks and later, but there are issues r
 
 Scream where you can be heard. File an issue here: https://github.com/timcharper/git_osx_installer/issues
 
+# Notes on building your own package:
+
+You'll need to install `PackageMaker`. It no longer ships with `XCode`, but it works on OS X `Yosemite`.
+
+https://developer.apple.com/downloads/index.action?name=PackageMaker
+
 # Changes / Recent updates
 
 ## 2014-12-21
