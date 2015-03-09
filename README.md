@@ -7,6 +7,8 @@ If you have XCode installed, and want to use a later git, running the following 
     sudo mv /usr/bin/git /usr/bin/git-xcode
     sudo ln -sf /usr/local/git/bin/git /usr/bin/git
 
+Note, you will need to restart your shell after so-doing, as most shells (bash) cache command location resolution from PATH.
+
 ## Which version should I download?
 
 If you are running:
