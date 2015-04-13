@@ -12,8 +12,8 @@ fi
 
 echo $GIT_VERSION
 
-make GIT_VERSION=$GIT_VERSION clean
-make GIT_VERSION=$GIT_VERSION package
+make OSX_VERSION=${OSX_VERSION:-10.9} VERSION=$GIT_VERSION clean
+make OSX_VERSION=${OSX_VERSION:-10.9} VERSION=$GIT_VERSION package
 
 echo "Testing the installer..."
 
