@@ -2,9 +2,11 @@
 
 ## I have XCode installed (and consequently it's bundled git); how do I get my system to use this version instead?
 
-If you have XCode installed, and want to use a later git, running the following should help:
+Xcode installs it's git to `/usr/bin/git`; recent versions of `OS X`
+(Yosemite and later) ship with stubs in /usr/bin, which take
+precedence over this git. To overcome, do the following:
 
-    sudo mv /usr/bin/git /usr/bin/git-xcode
+    sudo mv /usr/bin/git /usr/bin/git-system
     sudo ln -sf /usr/local/git/bin/git /usr/bin/git
 
 Note, you will need to restart your shell after so-doing, as most shells (bash) cache command location resolution from PATH.

@@ -14,13 +14,22 @@ Double-click the package in this disk image to install. This installs
 git to /usr/local/git. Root access is required.
 
 
+Step 2 - Remove stubs
+---------------------
+OS X has started to ship with stubs; in order to stay nice and
+easy-to-uninstall, the git installer places all of it's assets under
+`/usr/local/git`. As a result, the git in /usr/local/git/bin/git takes
+second place to /usr/bin/git.
 
-Step 2 - Restart bash sessions
+    sudo mv /usr/bin/git /usr/bin/git-system
+
+Step 3 - Restart bash sessions
 ------------------------------
-This include GNU screen sessions, TMUX sessions, etc. If you wish to preserve your precious screen session, just `source /etc/profile` and yo
+This include GNU screen sessions, TMUX sessions, etc. If you wish to
+preserve your precious screen session, just `source /etc/profile`.
 
 
-Step 3 - Run shell script
+Step 4 - Run shell script
 -------------------------
 This step is optional.
 

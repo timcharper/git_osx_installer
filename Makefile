@@ -59,7 +59,7 @@ vars:
 	# CFLAGS = $(CFLAGS)
 	# BUILD_CODE = $(BUILD_CODE)
 
-.PHONY: compile download install install-assets install-bin install-man install-subtree image package deploy reinstall setup
+.PHONY: compile download install install-assets install-bin install-man install-subtree image package deploy reinstall setup readme
 
 .SECONDARY:
 
@@ -189,6 +189,13 @@ download: build/git-$(VERSION).tar.gz build/git-manpages-$(VERSION).tar.gz
 compile: $(BUILD_DIR)/git-$(VERSION)/osx-built $(BUILD_DIR)/git-$(VERSION)/osx-built-keychain $(BUILD_DIR)/git-$(VERSION)/osx-built-subtree
 
 deploy: tmp/deployed-$(VERSION)-$(BUILD_CODE)
+
+tmp/deployed-readme: README.md
+	scp README.md timcharper@frs.sourceforge.net:/home/pfs/project/git-osx-installer | tee $@.working
+	mv $@.working $@
+
+readme: tmp/deployed-readme
+
 
 clean:
 	$(SUDO) rm -f $(BUILD_DIR)/git-$(VERSION)/osx-* /usr/local/git/VERSION-*
