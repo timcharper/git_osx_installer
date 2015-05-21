@@ -16,10 +16,16 @@ git to /usr/local/git. Root access is required.
 
 Step 2 - Remove stubs
 ---------------------
-OS X has started to ship with stubs; in order to stay nice and
-easy-to-uninstall, the git installer places all of it's assets under
-`/usr/local/git`. As a result, the git in /usr/local/git/bin/git takes
-second place to /usr/bin/git.
+In later versions of OS X (Yosemite and onward), you'll probably see a
+message like the following:
+
+    'The "git" command requires the command line developer
+    tools. Would you like to install the tools now?"
+
+This is because OS X has started to ship with stubs; in order to stay
+nice and easy-to-uninstall, the git installer places all of it's
+assets under `/usr/local/git`. As a result, the git in
+/usr/local/git/bin/git takes second place to /usr/bin/git.
 
     sudo mv /usr/bin/git /usr/bin/git-system
 
