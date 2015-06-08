@@ -1,8 +1,8 @@
 # FAQ
 
-## I have XCode installed (and consequently it's bundled git); how do I get my system to use this version instead?
+## I have XCode installed (and consequently its bundled git); how do I get my system to use this version instead?
 
-Xcode installs it's git to `/usr/bin/git`; recent versions of `OS X`
+Xcode installs its git to `/usr/bin/git`; recent versions of `OS X`
 (Yosemite and later) ship with stubs in /usr/bin, which take
 precedence over this git. To overcome, do the following:
 
