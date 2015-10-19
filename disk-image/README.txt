@@ -11,63 +11,35 @@ INSTALLATION
 Step 1 - Install Package
 ------------------------
 Double-click the package in this disk image to install. This installs
-git to /usr/local/git. Root access is required.
+git to /usr/local/git, and places symlinks into /usr/local/bin and
+/usr/share/man/.
 
 
-Step 2 - Remove stubs
----------------------
-In later versions of OS X (Yosemite and onward), you'll probably see a
-message like the following:
+Step 2 - Remove stubs (Yosemite and earlier)
+--------------------------------------------
+When you run `git`, you might see this message:
 
     'The "git" command requires the command line developer
     tools. Would you like to install the tools now?"
 
-This is because OS X has started to ship with stubs; in order to stay
-nice and easy-to-uninstall, the git installer places all of it's
-assets under `/usr/local/git`. As a result, the git in
-/usr/local/git/bin/git takes second place to /usr/bin/git.
+This is because OS X ships with stubs, and these stubs are taking
+precedence over /usr/local/bin.
+
+To resolve, run the following:
 
     sudo mv /usr/bin/git /usr/bin/git-system
 
-Step 3 - Restart bash sessions
-------------------------------
-This include GNU screen sessions, TMUX sessions, etc. If you wish to
-preserve your precious screen session, just `source /etc/profile`.
-
-
-Step 4 - Run shell script
--------------------------
-This step is optional.
-
-Non-terminal programs don't inherit the system wide PATH and MANPATH
-variables that your terminal does. If you'd like them to be able to
-see Git, for whatever reason, you can run this script. It will add the
-PATH and MANPATH to your ~/.MacOSX/environment.plist file. You'll need
-to log out of your user account for that to take effect.
-
-
-
-UPGRADING
-=========
-
-Simply download the latest Git installer, run the provided
-uninstall.sh script, and then install as normal.
-
+This should not be a problem in OS X 10.11 (El Capitan), as
+/usr/local/bin takes precedence over /usr/bin
 
 
 UNINSTALLING
 ============
 
-Git installer has made you sad? Run the provided uninstall.sh script
-in this disk image.
-
-
+Run the uninstall script in /usr/local/git/uninstall.sh
 
 NOTES ABOUT THIS BUILD
 ============
-
-* This build targets Snow Leopard and Lion. It may work on earlier or
-  later versions of OS X.
 
 * Since Mac OS X does not ship with gettext, this build does not
   include gettext support. If popular demand requests (via the git
@@ -75,7 +47,6 @@ NOTES ABOUT THIS BUILD
   http://code.google.com/p/git-osx-installer/issues/list) the
   installer may bundle gettext in the future to provide localization
   support.
-
 
 KNOWN ISSUES
 ============
@@ -115,11 +86,12 @@ http://code.google.com/p/git-osx-installer/issues/detail?id=35
 
 "git-svn is missing"
 --------------------
-Actually, it's probably NOT missing. If you missed the memo, here it
-is again: the hyphenated syntax for calling git commands is history
-(since 1.6.0). Invoke "git svn" instead.
+Mac OS X no longer ships with SVN, and this installer no longer ships
+with git-svn support.
 
+Complain about that here:
 
+https://github.com/timcharper/git_osx_installer/issues
 
 Handling of international characters in file is broken
 ------------------------------------------------------
@@ -127,17 +99,5 @@ Handling of international characters in file is broken
 If you would like some validation, read this: http://is.gd/5NAN9.
 You're not alone.
 
-This is not an issue with git, not the installer. Apparently
+This is not an issue with Git, not the installer. Apparently
 subversion has it too.
-
-
-
-"Can't locate Term/ReadKey.pm in @INC"
---------------------------------------
-That perl library is normally installed on OS X machines. For whatever
-reason, you're lucky enough not to have it.
-
-You may find the following post helpful:
-
-http://www.kkovacs.hu/2008/08/git-svn-for-os-x-fix/ 
-

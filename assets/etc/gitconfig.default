@@ -50,8 +50,8 @@
 	path = .gitcredential
 
 #[github]
-#	user = 
-#	token = 
+#	user =
+#	token =
 
 [diff]
 	# git does copy/rename *detection*. if you want it to track copies/renames:
