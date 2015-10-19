@@ -5,3 +5,4 @@
 disk-image/*.dmg
 disk-image/VERSION-*
 tmp/
+build
