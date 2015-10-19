@@ -205,8 +205,7 @@ readme: tmp/deployed-readme
 
 
 clean:
-	$(SUDO) rm -f $(BUILD_DIR)/git-$(VERSION)/osx-* /usr/local/git/VERSION-*
-	rm -rf $(DESTDIR)
+	$(SUDO) rm -rf $(BUILD_DIR)/git-$(VERSION)/osx-* $(DESTDIR)
 	cd $(BUILD_DIR)/git-$(VERSION) && $(SUBMAKE) clean
 	cd $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain; $(SUBMAKE) clean
 	cd $(BUILD_DIR)/git-$(VERSION)/contrib/subtree; $(SUBMAKE) clean

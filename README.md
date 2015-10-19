@@ -20,6 +20,7 @@ If you are running:
 - `10.8` Mountain Lion: git-*-snow-leopard
 - `10.9` Mavericks: git-*-mavericks
 - `10.10` Yosemite: git-*-mavericks
+- `10.11` Yosemite: git-*-mavericks
 
 The Snow Leopard builds will work on Mavericks and later, but there are issues running `git gui`.
 
@@ -27,13 +28,15 @@ The Snow Leopard builds will work on Mavericks and later, but there are issues r
 
 Scream where you can be heard. File an issue here: https://github.com/timcharper/git_osx_installer/issues
 
-# Notes on building your own package:
-
-You'll need to install `PackageMaker`. It no longer ships with `XCode`, but it works on OS X `Yosemite`.
-
-https://developer.apple.com/downloads/index.action?name=PackageMaker
-
 # Changes / Recent updates
+
+## 2015-10-18
+
+Builds have been updated to create symlinks in `/usr/local/bin` to run git. El Capitan no longer allows modifications to `/usr/bin`, and `/usr/local/bin` is preferred over `/usr/bin`, by default.
+
+The installer installs the `uninstall.sh` script, which has also been updated to remove the new symlinks created.
+
+The installer no longer uses `PackageMaker`. Instead, it uses `pkgbuild`, which is much simpler, and is the supported way of doing packages.
 
 ## 2014-12-21
 
