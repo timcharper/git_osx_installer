@@ -169,8 +169,7 @@ disk-image/VERSION-$(VERSION)-$(ARCH_CODE)-$(OSX_CODE):
 	touch "$@"
 
 disk-image/git-$(VERSION)-$(BUILD_CODE).pkg: disk-image/VERSION-$(VERSION)-$(ARCH_CODE)-$(OSX_CODE) $(DESTDIR)$(GIT_PREFIX)/VERSION-$(VERSION)-$(BUILD_CODE) $(BUILD_DIR)/git-$(VERSION)/osx-installed $(BUILD_DIR)/git-$(VERSION)/osx-built-assert-$(ARCH_CODE)
-	# $(SUDO) bash -c "$(PACKAGE_MAKER_APP)/Contents/MacOS/PackageMaker --doc Git\ Installer.pmdoc/ -o disk-image/git-$(VERSION)-$(BUILD_CODE).pkg --title 'Git $(VERSION) $(ARCH)'"
-	pkgbuild --identifier com.git.pkg --version $(VERSION) --root $(DESTDIR)$(PREFIX) --install-location $(PREFIX) disk-image/git-$(VERSION)-$(BUILD_CODE).pkg
+	pkgbuild --identifier com.git.pkg --version $(VERSION) --root $(DESTDIR)$(PREFIX) --install-location $(PREFIX) --component-plist ./git-components.plist disk-image/git-$(VERSION)-$(BUILD_CODE).pkg
 
 git-%-$(BUILD_CODE).dmg: disk-image/git-%-$(BUILD_CODE).pkg
 	rm -f git-$(VERSION)-$(BUILD_CODE)*.dmg
@@ -206,9 +205,9 @@ readme: tmp/deployed-readme
 
 clean:
 	$(SUDO) rm -rf $(BUILD_DIR)/git-$(VERSION)/osx-* $(DESTDIR)
-	cd $(BUILD_DIR)/git-$(VERSION) && $(SUBMAKE) clean
-	cd $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain; $(SUBMAKE) clean
-	cd $(BUILD_DIR)/git-$(VERSION)/contrib/subtree; $(SUBMAKE) clean
+	[ -d $(BUILD_DIR)/git-$(VERSION) ] && cd $(BUILD_DIR)/git-$(VERSION) && $(SUBMAKE) clean || echo done
+	[ -d $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain ] && cd $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain && $(SUBMAKE) clean || echo done
+	[ -d $(BUILD_DIR)/git-$(VERSION)/contrib/subtree ] && cd $(BUILD_DIR)/git-$(VERSION)/contrib/subtree && $(SUBMAKE) clean || echo done
 
 reinstall:
 	$(SUDO) rm -rf /usr/local/git/VERSION-*

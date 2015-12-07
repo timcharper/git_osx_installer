@@ -1,8 +1,6 @@
 #!/bin/sh
 find /usr/local/git > tmp/install_contents_before.txt
 echo "Testing..."
-sudo rm /etc/paths.d/git
-sudo rm /etc/manpaths.d/git
 sudo rm -rf /usr/local/git
 
 echo "OK - running the installer. Come back and press a key when you're done."
@@ -10,7 +8,7 @@ open disk-image/git*.pkg
 
 read -n 1
 
-for file in /etc/paths.d/git /etc/manpaths.d/git /usr/local/git/bin/git "/usr/local/git/share/git-gui/lib/Git Gui.app/Contents/Info.plist"; do
+for file in /usr/local/git/bin/git "/usr/local/git/share/git-gui/lib/Git Gui.app/Contents/Info.plist"; do
   printf "'$file'"
   if [ -f "$file" ]; then
     echo " - exists"
