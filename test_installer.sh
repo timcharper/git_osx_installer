@@ -14,7 +14,9 @@ for file in /usr/local/git/bin/git "/usr/local/git/share/git-gui/lib/Git Gui.app
     echo " - exists"
   else
     echo " DOES NOT EXIST!"
-    echo "FAIL FAIL FAIL ALL CAPS FAT KID IN DODGE BALL FAIL"
+    for n in {1..20}; do
+      echo "FAIL FAIL FAIL"
+    done
     exit 1
   fi
 done
