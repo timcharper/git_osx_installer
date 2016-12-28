@@ -8,6 +8,8 @@ OSX_VERSION := 10.6
 SDK_PATH := $(shell bin/find-dir /Developer/SDKs/MacOSX$(OSX_VERSION).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(OSX_VERSION).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
 TARGET_FLAGS := -mmacosx-version-min=$(OSX_VERSION) -isysroot $(SDK_PATH) -DMACOSX_DEPLOYMENT_TARGET=$(OSX_VERSION)
 
+VERSION := 2.11.0
+
 ifeq ("$(OSX_VERSION)", "10.6")
 OSX_NAME := Snow Leopard
 endif
