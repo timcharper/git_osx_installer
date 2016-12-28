@@ -26,6 +26,9 @@ endif
 ifeq ("$(OSX_VERSION)", "10.11")
 OSX_NAME := El Capitan
 endif
+ifeq ("$(OSX_VERSION)", "10.12")
+OSX_NAME := Sierra
+endif
 
 OSX_CODE := $(shell echo "$(OSX_NAME)" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
@@ -94,8 +97,8 @@ $(DESTDIR)$(GIT_PREFIX)/VERSION-$(VERSION)-$(BUILD_CODE):
 
 build/%.tar.gz:
 	mkdir -p build
-	curl -o build/$*.tar.gz.working "$(DOWNLOAD_LOCATION)/$*.tar.gz"
-	mv build/$*.tar.gz.working build/$*.tar.gz
+	curl -oL build/$*-$(VERSION).tar.gz.working "$(DOWNLOAD_LOCATION)/$*-$(VERSION).tar.gz"
+	mv build/$*-$(VERSION).tar.gz.working build/$*-$(VERSION).tar.gz
 
 $(BUILD_DIR)/git-$(VERSION)/Makefile: build/git-$(VERSION).tar.gz
 	mkdir -p $(BUILD_DIR)
