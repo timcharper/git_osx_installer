@@ -18,4 +18,4 @@ echo "Testing the installer..."
 
 . test_installer.sh
 
-make OSX_VERSION=${OSX_VERSION:-10.9} VERSION=${GIT_VERSION} deploy
+make OSX_VERSION=${OSX_VERSION:-10.9} VERSION=${GIT_VERSION} GIT_VERSION=${GIT_VERSION} deploy
