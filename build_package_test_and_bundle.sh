@@ -7,7 +7,7 @@ rm -f Disk\ Image/*.pkg
 
 . ./env.sh
 
-GIT_VERSION=${1:-$(current-git-version)}
+GIT_VERSION=${1:-$(CURRENT-GIT-VERSION)}
 
 echo $GIT_VERSION
 
@@ -18,4 +18,4 @@ echo "Testing the installer..."
 
 . test_installer.sh
 
-make GIT_VERSION=$GIT_VERSION deploy
+make OSX_VERSION=${OSX_VERSION:-10.8} VERSION_VERSION=${GIT_VERSION} deploy
