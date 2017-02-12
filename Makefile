@@ -26,6 +26,9 @@ endif
 ifeq ("$(OSX_VERSION)", "10.11")
 OSX_NAME := El Capitan
 endif
+ifeq ("$(OSX_VERSION)", "10.12")
+OSX_NAME := Sierra
+endif
 
 OSX_CODE := $(shell echo "$(OSX_NAME)" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
