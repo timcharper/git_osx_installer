@@ -7,7 +7,7 @@ rm -f Disk\ Image/*.pkg
 
 . ./env.sh
 
-GIT_VERSION=${1:-$(CURRENT-GIT-VERSION)}
+GIT_VERSION=${1:-$(current-git-version)}
 
 echo $GIT_VERSION
 
