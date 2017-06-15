@@ -5,7 +5,7 @@ CPLUS_INCLUDE_PATH := /usr/include
 LD_LIBRARY_PATH := /usr/lib
 
 OSX_VERSION := 10.6
-SDK_PATH := $(shell bin/find-dir /Developer/SDKs/MacOSX$(OSX_VERSION).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(OSX_VERSION).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
+SDK_PATH := $(shell bin/find-dir  $(PWD)/MacOSX10.9.sdk /Developer/SDKs/MacOSX$(OSX_VERSION).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(OSX_VERSION).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
 TARGET_FLAGS := -mmacosx-version-min=$(OSX_VERSION) -isysroot $(SDK_PATH) -DMACOSX_DEPLOYMENT_TARGET=$(OSX_VERSION)
 
 ifeq ("$(OSX_VERSION)", "10.6")
@@ -65,6 +65,7 @@ vars:
 	# DESTDIR = $(DESTDIR)
 	# GIT_PREFIX = $(GIT_PREFIX)
 	# BUILD_DIR = $(BUILD_DIR)
+	# SDK_PATH = $(SDK_PATH)
 
 .PHONY: compile download install install-assets install-bin install-man install-subtree image package deploy reinstall setup readme
 
@@ -87,7 +88,6 @@ tmp/setup-verified: /usr/local/etc/xml/catalog /usr/local/bin/xmlto /usr/local/b
 setup: tmp/setup-verified
 
 $(DESTDIR)$(GIT_PREFIX)/VERSION-$(VERSION)-$(BUILD_CODE):
-	[ -d $(DESTDIR)$(GIT_PREFIX) ] && $(SUDO) rm -rf $(DESTDIR) || echo ok
 	rm -f $(BUILD_DIR)/git-$(VERSION)/osx-installed*
 	mkdir -p $(DESTDIR)$(GIT_PREFIX)
 	touch $@
@@ -103,6 +103,7 @@ $(BUILD_DIR)/git-$(VERSION)/Makefile: build/git-$(VERSION).tar.gz
 	touch $@
 
 $(BUILD_DIR)/git-$(VERSION)/osx-built: $(BUILD_DIR)/git-$(VERSION)/Makefile
+	[ -d $(DESTDIR)$(GIT_PREFIX) ] && $(SUDO) rm -rf $(DESTDIR) || echo ok
 	cd $(BUILD_DIR)/git-$(VERSION); $(SUBMAKE) -j $(CORES) all strip
 	touch $@
 
