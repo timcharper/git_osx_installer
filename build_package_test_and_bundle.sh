@@ -18,4 +18,4 @@ echo "Testing the installer..."
 
 . test_installer.sh
 
-make GIT_VERSION=$GIT_VERSION deploy
+make VERSION=$GIT_VERSION deploy
