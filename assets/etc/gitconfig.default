@@ -3,10 +3,6 @@
 	legacyheaders = false # >git 1.5
 	quotepath = false
 
-	# http://stackoverflow.com/questions/136178/git-diff-handling-long-lines
-	pager = less -r
-	# if ↑ doesn’t work, try: pager = less -+$LESS -FRX
-
 [user]
 #	name = your name
 #	email = your@name
