@@ -5,3 +5,6 @@
 disk-image/*.dmg
 disk-image/VERSION-*
 tmp/
+build
+MacOSX10.*
+stage/

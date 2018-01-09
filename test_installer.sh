@@ -1,38 +1,40 @@
 #!/bin/sh
-find /usr/local/git > tmp/install_contents_before.txt
-echo "Testing..."
-sudo rm /etc/paths.d/git
-sudo rm /etc/manpaths.d/git
-sudo rm -rf /usr/local/git
+
+
+# wipe out the symlinks
+if [ -d /usr/local/git ]; then
+  find /usr/local/git -type f  | sed 's|/usr/local/git|/usr/local|g' | while read f; do [ -h "$f" ] && sudo rm $f || true; done
+  sudo rm -rf /usr/local/git
+fi
 
 echo "OK - running the installer. Come back and press a key when you're done."
 open disk-image/git*.pkg 
 
 read -n 1
 
-for file in /etc/paths.d/git /etc/manpaths.d/git /usr/local/git/bin/git "/usr/local/git/share/git-gui/lib/Git Gui.app/Contents/Info.plist"; do
+for file in /usr/local/git/bin/git "/usr/local/git/share/git-gui/lib/Git Gui.app/Contents/Info.plist"; do
   printf "'$file'"
   if [ -f "$file" ]; then
     echo " - exists"
   else
     echo " DOES NOT EXIST!"
-    echo "FAIL FAIL FAIL ALL CAPS FAT KID IN DODGE BALL FAIL"
+    for n in {1..20}; do
+      echo "FAIL FAIL FAIL"
+    done
     exit 1
   fi
 done
 
-find /usr/local/git > tmp/install_contents_after.txt
+echo "Testing..."
 
-install_diff=$(diff tmp/install_contents_before.txt tmp/install_contents_after.txt)
-if [ "$install_diff" == "" ]; then
-  echo "No files went missing!"
-else
-  echo "A FEW FILES WENT MISSING!
-$install_diff"
-  exit 1
-fi
+(cd stage/*-$GIT_VERSION; find usr) | while read f; do
+  if ! [ -e "/$f" ]; then
+    echo "/$f did not get installed!"
+    exit 1
+  fi
+done
 
-if (ls -alR /usr/local/git/* | grep `whoami`); then
+if (ls -alR /usr/local/git/* | awk '{print $3}' | grep `whoami`); then
   echo "Some user-owned files exist!"
   exit 1
 fi

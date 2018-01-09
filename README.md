@@ -1,17 +1,48 @@
 # FAQ
 
-## I have XCode installed (and consequently it's bundled git); how do I get my system to use this version instead?
+## I have XCode installed (and consequently its bundled git); how do I get my system to use this version instead?
 
-If you have XCode installed, and want to use a later git, running the following should help:
+Xcode installs its git to `/usr/bin/git`; recent versions of `OS X`
+(Yosemite and later) ship with stubs in /usr/bin, which take
+precedence over this git. To overcome, do the following:
 
-    sudo mv /usr/bin/git /usr/bin/git-xcode
+    sudo mv /usr/bin/git /usr/bin/git-system
     sudo ln -sf /usr/local/git/bin/git /usr/bin/git
 
-## 64-bit or 32-bit?
+Note, you will need to restart your shell after so-doing, as most shells (bash) cache command location resolution from PATH.
 
-If your Mac was made on or after 2007, it is a 64-bit machine.
+## Which version should I download?
+
+If you are running:
+
+- `10.6` Snow Leopard: git-*-snow-leopard
+- `10.7` Lion: git-*-snow-leopard
+- `10.8` Mountain Lion: git-*-snow-leopard
+- `10.9` Mavericks: git-*-mavericks
+- `10.10` Yosemite: git-*-mavericks
+- `10.11` Yosemite: git-*-mavericks
+
+The Snow Leopard builds will work on Mavericks and later, but there are issues running `git gui`.
+
+## It doesn't work. Help!
+
+Scream where you can be heard. File an issue here: https://github.com/timcharper/git_osx_installer/issues
 
 # Changes / Recent updates
+
+## 2015-10-18
+
+Builds have been updated to create symlinks in `/usr/local/bin` to run git. El Capitan no longer allows modifications to `/usr/bin`, and `/usr/local/bin` is preferred over `/usr/bin`, by default.
+
+The installer installs the `uninstall.sh` script, which has also been updated to remove the new symlinks created.
+
+The installer no longer uses `PackageMaker`. Instead, it uses `pkgbuild`, which is much simpler, and is the supported way of doing packages.
+
+## 2014-12-21
+
+Mavericks builds have been published to address issues running `git gui`. Going forward, `Snow Leopard` and `Mavericks` builds will be published.
+
+Also, the Makefile has been fixed to enable 32-bit builds of the OS X keychain credential helper. Universal builds have returned, reducing one more decision the user has to make when determining the appropriate download version.
 
 ## 2014-12-20
 
