@@ -30,9 +30,8 @@ endif
 OSX_CODE := $(shell echo "$(OSX_NAME)" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
 ARCH := Universal
-ARCH_CODE := $(shell echo "$(ARCH)" | tr '[:upper:]' '[:lower:]')
-ARCH_FLAGS_universal := -arch x86_64 -arch i386
-ARCH_FLAGS_i386 := -arch i386
+ARCH_CODE := universal
+ARCH_FLAGS_universal := -arch x86_64
 ARCH_FLAGS_x86_64 := -arch x86_64
 
 CFLAGS := $(TARGET_FLAGS) $(ARCH_FLAGS_${ARCH_CODE})
@@ -156,8 +155,8 @@ $(BUILD_DIR)/git-$(VERSION)/osx-installed: $(BUILD_DIR)/git-$(VERSION)/osx-insta
 
 $(BUILD_DIR)/git-$(VERSION)/osx-built-assert-$(ARCH_CODE): $(BUILD_DIR)/git-$(VERSION)/osx-built
 ifeq ("$(ARCH_CODE)", "universal")
-	File $(BUILD_DIR)/git-$(VERSION)/git | grep "Mach-O universal binary with 2 architectures"
-	File $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain/git-credential-osxkeychain | grep "Mach-O universal binary with 2 architectures"
+	File $(BUILD_DIR)/git-$(VERSION)/git
+	File $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain/git-credential-osxkeychain
 else
 	[ "$$(File $(BUILD_DIR)/git-$(VERSION)/git | cut -f 5 -d' ')" == "$(ARCH_CODE)" ]
 	[ "$$(File $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain/git-credential-osxkeychain | cut -f 5 -d' ')" == "$(ARCH_CODE)" ]
