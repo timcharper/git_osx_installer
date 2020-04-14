@@ -7,7 +7,7 @@ on:
         description: The fork of git.git to use for building Git
         required: false
       git-ref:
-        description: "Which ref to build Git from (default: v2.31.1)"
+        description: "Which ref to build Git from (default: the latest v<version> tag)"
         required: false
   # push:
 
@@ -15,7 +15,6 @@ env:
   GIT_REPOSITORY: "${{github.event.inputs.git-repository}}"
   GIT_REF: "${{github.event.inputs.git-ref}}"
   FALLBACK_GIT_REPOSITORY: https://github.com/git/git
-  FALLBACK_GIT_REF: v2.31.1
 
   # `gettext` is keg-only
   LDFLAGS: -L/usr/local/opt/gettext/lib
@@ -42,7 +41,16 @@ jobs:
       - name: Clone git
         run: |
           git clone -n "${GIT_REPOSITORY:-$FALLBACK_GIT_REPOSITORY}" git &&
-          git -C git pull origin "${GIT_REF:-$FALLBACK_GIT_REF}"
+          cd git &&
+          if test -z "$GIT_REF"
+          then
+            GIT_REF="$(git for-each-ref \
+              --sort=-taggerdate --count=1 --format='%(refname)' 'refs/tags/v[0-9]*')" &&
+            test -n "$GIT_REF" ||
+            { echo "No eligible tag found" >&2; exit 1; }
+          fi &&
+          git fetch origin "$GIT_REF" &&
+          git switch --detach FETCH_HEAD
       - name: Build GIT-VERSION-FILE and .tar.gz files
         run: |
           set -x
