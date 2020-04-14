@@ -1,0 +1,96 @@
+name: osx-installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      git-repository:
+        description: The fork of git.git to use for building Git
+        required: false
+      git-ref:
+        description: "Which ref to build Git from (default: v2.31.1)"
+        required: false
+  # push:
+
+env:
+  GIT_REPOSITORY: "${{github.event.inputs.git-repository}}"
+  GIT_REF: "${{github.event.inputs.git-ref}}"
+  FALLBACK_GIT_REPOSITORY: https://github.com/git/git
+  FALLBACK_GIT_REF: v2.31.1
+
+  # `gettext` is keg-only
+  LDFLAGS: -L/usr/local/opt/gettext/lib
+  CFLAGS: -I/usr/local/opt/gettext/include
+  # Link with cURL
+  CURL_LDFLAGS: -lcurl
+  # To make use of the catalogs...
+  XML_CATALOG_FILES: /usr/local/etc/xml/catalog
+  # Enable a bit stricter compile flags
+  DEVELOPER: 1
+  # For the osx-installer build
+  OSX_VERSION: 10.6
+  V: 1
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install Git's dependencies
+        run: |
+          brew install autoconf automake asciidoc docbook xmlto
+          brew link --force gettext
+      - name: Clone git
+        run: |
+          git clone -n "${GIT_REPOSITORY:-$FALLBACK_GIT_REPOSITORY}" git &&
+          git -C git pull origin "${GIT_REF:-$FALLBACK_GIT_REF}"
+      - name: Build GIT-VERSION-FILE and .tar.gz files
+        run: |
+          set -x
+          PATH=/usr/local/bin:$PATH \
+          make -C git -j$(sysctl -n hw.physicalcpu) GIT-VERSION-FILE dist dist-doc
+      - name: Bundle .dmg
+        run: |
+          die () {
+            echo "$*" >&2
+            exit 1
+          }
+
+          VERSION="`sed -n 's/^GIT_VERSION = //p' <git/GIT-VERSION-FILE`"
+          test -n "$VERSION" ||
+          die "Could not determine version!"
+          export VERSION
+
+          ln -s git git-$VERSION
+
+          mkdir -p build &&
+          cp git/git-$VERSION.tar.gz git/git-manpages-$VERSION.tar.gz build/ ||
+          die "Could not copy .tar.gz files"
+
+          # drop the -isysroot `GIT_SDK` hack
+          sed -i .bak -e 's/ -isysroot .(SDK_PATH)//' Makefile ||
+          die "Could not drop the -isysroot hack"
+
+          # make sure that .../usr/local/git/share/man/ exists
+          sed -i .bak -e 's/\(tar .*-C \)\(.*\/share\/man\)$/mkdir -p \2 \&\& &/' Makefile ||
+          die "Could not edit Makefile"
+
+          # For debugging:
+          #
+          # cat Makefile
+          # make vars
+
+          PATH=/usr/local/bin:/System/Library/Frameworks:$PATH \
+          make build/intel-universal-snow-leopard/git-$VERSION/osx-built-keychain ||
+          die "Build failed"
+
+          PATH=/usr/local/bin:$PATH \
+          make image ||
+          die "Build failed"
+
+          mkdir osx-installer &&
+          mv *.dmg disk-image/*.pkg osx-installer/
+      - name: Upload osx-installer artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: osx-installer
+          path: osx-installer
