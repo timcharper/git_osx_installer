@@ -12,7 +12,7 @@ else
   response="yes"
 fi
 
-if [ "$response" != "yes" ]; then
+if [ "$response" == "yes" ]; then
   # remove all of the symlinks we've created
   pkgutil --files com.git.pkg | grep bin | while read f; do
     if [ -L /usr/local/$f ]; then
