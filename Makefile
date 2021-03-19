@@ -94,7 +94,7 @@ $(DESTDIR)$(GIT_PREFIX)/VERSION-$(VERSION)-$(BUILD_CODE):
 
 build/%.tar.gz:
 	mkdir -p build
-	curl -o build/$*.tar.gz.working "$(DOWNLOAD_LOCATION)/$*.tar.gz"
+	curl -L -o build/$*.tar.gz.working "$(DOWNLOAD_LOCATION)/$*.tar.gz"
 	mv build/$*.tar.gz.working build/$*.tar.gz
 
 $(BUILD_DIR)/git-$(VERSION)/Makefile: build/git-$(VERSION).tar.gz
