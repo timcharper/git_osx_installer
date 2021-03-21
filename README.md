@@ -11,7 +11,7 @@ precedence over this git. To overcome, do the following:
 
 Note, you will need to restart your shell after so-doing, as most shells (bash) cache command location resolution from PATH.
 
-## Which version should I download?
+## Which version should I [download](https://sourceforge.net/projects/git-osx-installer/files/)?
 
 If you are running:
 
