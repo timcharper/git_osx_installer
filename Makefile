@@ -131,7 +131,7 @@ $(BUILD_DIR)/git-$(VERSION)/osx-installed-assets: $(BUILD_DIR)/git-$(VERSION)/os
 	touch $@
 
 $(BUILD_DIR)/git-$(VERSION)/osx-installed-bin: $(BUILD_DIR)/git-$(VERSION)/osx-built $(BUILD_DIR)/git-$(VERSION)/osx-built-keychain $(DESTDIR)$(GIT_PREFIX)/VERSION-$(VERSION)-$(BUILD_CODE)
-	cd $(BUILD_DIR)/git-$(VERSION); $(SUBMAKE) install
+	cd $(BUILD_DIR)/git-$(VERSION); $(SUBMAKE) INSTALL_SYMLINKS=1 install
 	cp $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain/git-credential-osxkeychain $(DESTDIR)$(GIT_PREFIX)/bin/git-credential-osxkeychain
 	mkdir -p $(DESTDIR)$(GIT_PREFIX)/contrib/completion
 	cp $(BUILD_DIR)/git-$(VERSION)/contrib/completion/git-completion.bash $(DESTDIR)$(GIT_PREFIX)/contrib/completion/
@@ -140,7 +140,6 @@ $(BUILD_DIR)/git-$(VERSION)/osx-installed-bin: $(BUILD_DIR)/git-$(VERSION)/osx-b
 	# This is needed for Git-Gui, GitK
 	mkdir -p $(DESTDIR)$(GIT_PREFIX)/lib/perl5/site_perl
 	[ ! -f $(DESTDIR)$(GIT_PREFIX)/lib/perl5/site_perl/Error.pm ] && cp $(BUILD_DIR)/git-$(VERSION)/perl/private-Error.pm $(DESTDIR)$(GIT_PREFIX)/lib/perl5/site_perl/Error.pm || echo done
-	ruby UserScripts/symlink_git_hardlinks.rb $(DESTDIR)
 	touch $@
 
 $(BUILD_DIR)/git-$(VERSION)/osx-installed-man: build/git-manpages-$(VERSION).tar.gz $(BUILD_DIR)/git-$(VERSION)/osx-installed-bin
