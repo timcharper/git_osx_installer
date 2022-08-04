@@ -1,1 +1,2 @@
-curl http://git-scm.com/ 2>&1 | grep '<span class="version">' -A 1 | tail -n 1 | sed $sed_regexp 's/ *//'
+#/usr/bin/env bash
+curl -fsSL http://git-scm.com/ 2>&1 | grep '<span class="version">' -A 1 | tail -n 1 | sed $sed_regexp 's/ *//'
