@@ -1,43 +1,44 @@
 #!/bin/sh
 
+INSTALL_DIR="/usr/local/git/"
 
-# wipe out the symlinks
-if [ -d /usr/local/git ]; then
-  find /usr/local/git -type f  | sed 's|/usr/local/git|/usr/local|g' | while read f; do [ -h "$f" ] && sudo rm $f || true; done
-  sudo rm -rf /usr/local/git
-fi
 
-echo "OK - running the installer. Come back and press a key when you're done."
-open disk-image/git*.pkg 
+[ $# -gt 0 ] && GIT_PKG="$1" || GIT_PKG="$(ls git-*.pkg | head -1)"
+if ! [ -f "$GIT_PKG" ]; then echo "$GIT_PKG does not exist"; exit 2; fi
+[ $# -gt 1 ] && GIT_DIR="$2" || GIT_DIR="stage/$(echo "${GIT_PKG%.*}" | grep -o 'git-[0-9.]\+')"
+if ! [ -d "$GIT_DIR" ]; then echo "$GIT_DIR does not exist"; exit 2; fi
 
-read -n 1
 
-for file in /usr/local/git/bin/git "/usr/local/git/share/git-gui/lib/Git Gui.app/Contents/Info.plist"; do
-  printf "'$file'"
-  if [ -f "$file" ]; then
-    echo " - exists"
-  else
-    echo " DOES NOT EXIST!"
-    for n in {1..20}; do
-      echo "FAIL FAIL FAIL"
-    done
-    exit 1
-  fi
-done
+echo "Uninstalling old version..."
+[ -x /usr/local/git/uninstall ] && "$INSTALL_DIR/uninstall" --yes
+[ -x /usr/local/git/uninstall.sh ] && "$INSTALL_DIR/uninstall.sh" --yes
+
+
+echo "Installing $GIT_PKG..."
+sudo /usr/sbin/installer -pkg "$GIT_PKG" -target / || exit 2
+
 
 echo "Testing..."
+RETVAL=0
 
-(cd stage/*-$GIT_VERSION; find usr) | while read f; do
-  if ! [ -e "/$f" ]; then
-    echo "/$f did not get installed!"
-    exit 1
+for file in "$INSTALL_DIR/bin/git"; do
+  if ! [ -f "$file" ]; then
+    echo "'$file' DOES NOT EXIST!"
+    RETVAL=1
   fi
 done
 
-if (ls -alR /usr/local/git/* | awk '{print $3}' | grep `whoami`); then
+(cd "$GIT_DIR" && find usr) | while read file; do
+  if ! [ -e "/$file" ]; then
+    echo "/$file did not get installed!"
+    RETVAL=1
+  fi
+done
+
+if ls -alR "$INSTALL_DIR"/* | awk '{print $3}' | awk 'NF' | grep -qv root; then
   echo "Some user-owned files exist!"
-  exit 1
+  RETVAL=1
 fi
 
-echo "Success!"
-
+[ $RETVAL -eq 0 ] && echo "Success!"
+exit $RETVAL

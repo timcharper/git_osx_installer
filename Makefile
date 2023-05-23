@@ -4,213 +4,177 @@ C_INCLUDE_PATH := /usr/include
 CPLUS_INCLUDE_PATH := /usr/include
 LD_LIBRARY_PATH := /usr/lib
 
-OSX_VERSION := 10.6
-SDK_PATH := $(shell bin/find-dir  $(PWD)/MacOSX10.9.sdk /Developer/SDKs/MacOSX$(OSX_VERSION).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(OSX_VERSION).sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform)
-TARGET_FLAGS := -mmacosx-version-min=$(OSX_VERSION) -isysroot $(SDK_PATH) -DMACOSX_DEPLOYMENT_TARGET=$(OSX_VERSION)
+VERSION := $(shell bin/latest-git-version)
+DOWNLOAD_LOCATION := https://www.kernel.org/pub/software/scm/git
 
-ifeq ("$(OSX_VERSION)", "10.6")
-OSX_NAME := Snow Leopard
-endif
-ifeq ("$(OSX_VERSION)", "10.7")
-OSX_NAME := Lion
-endif
-ifeq ("$(OSX_VERSION)", "10.8")
-OSX_NAME := Mountain Lion
-endif
-ifeq ("$(OSX_VERSION)", "10.9")
-OSX_NAME := Mavericks
-endif
-ifeq ("$(OSX_VERSION)", "10.10")
-OSX_NAME := Yosemite
-endif
-ifeq ("$(OSX_VERSION)", "10.11")
-OSX_NAME := El Capitan
-endif
+ARCH_FLAGS_intel := -target x86_64-apple-macos10.12
+ARCH_FLAGS_arm := -target arm64-apple-macos11
 
-OSX_CODE := $(shell echo "$(OSX_NAME)" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+CFLAGS_intel := $(ARCH_FLAGS_intel)
+LDFLAGS_intel := $(ARCH_FLAGS_intel)
+CFLAGS_arm := $(ARCH_FLAGS_arm)
+LDFLAGS_arm := $(ARCH_FLAGS_arm)
 
-ARCH := Universal
-ARCH_CODE := universal
-ARCH_FLAGS_universal := -arch x86_64
-ARCH_FLAGS_x86_64 := -arch x86_64
-
-CFLAGS := $(TARGET_FLAGS) $(ARCH_FLAGS_${ARCH_CODE})
-LDFLAGS := $(TARGET_FLAGS) $(ARCH_FLAGS_${ARCH_CODE})
-
-BAK_FOLDER := $(shell date +%s)
 PREFIX := /usr/local
 GIT_PREFIX := $(PREFIX)/git
+BUILD_DIR := build
+DESTDIR_arm := $(PWD)/stage-arm/
+DESTDIR_intel := $(PWD)/stage-intel/
+DESTDIR := $(PWD)/stage/git-$(VERSION)
 
-DOWNLOAD_LOCATION=https://www.kernel.org/pub/software/scm/git
+ifdef INCLUDE_GUI
+FLAGS :=
+COMP_PLIST := --component-plist ./git-components.plist
+else
+FLAGS := NO_TCLTK=1
+COMP_PLIST :=
+endif
 
-XML_CATALOG_FILES=$(shell bin/find-file /usr/local/etc/xml/catalog)
+SUBMAKE_base := "$(MAKE)" C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" $(FLAGS) NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix="$(GIT_PREFIX)"
+SUBMAKE_arm := $(SUBMAKE_base) DESTDIR="$(DESTDIR_arm)" CFLAGS="$(CFLAGS_arm)" LDFLAGS="$(LDFLAGS_arm)"
+SUBMAKE_intel := $(SUBMAKE_base) DESTDIR="$(DESTDIR_intel)" CFLAGS="$(CFLAGS_intel)" LDFLAGS="$(LDFLAGS_intel)"
 
-BUILD_CODE := intel-$(ARCH_CODE)-$(OSX_CODE)
-BUILD_DIR := build/$(BUILD_CODE)
-DESTDIR := $(PWD)/stage/git-$(BUILD_CODE)-$(VERSION)
-SUBMAKE := $(MAKE) C_INCLUDE_PATH="$(C_INCLUDE_PATH)" CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH)" LD_LIBRARY_PATH="$(LD_LIBRARY_PATH)" TARGET_FLAGS="$(TARGET_FLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NO_GETTEXT=1 NO_DARWIN_PORTS=1 prefix=$(GIT_PREFIX) DESTDIR=$(DESTDIR)
+XML_CATALOG_FILES := $(shell bin/find-file /usr/local/etc/xml/catalog /opt/homebrew/etc/xml/catalog)
 
+.PHONY: setup download compile stage install package
 
-CORES := $(shell bash -c "sysctl hw.ncpu | awk '{print \$$2}'")
+.SECONDARY:
+
+package: git-$(VERSION).pkg
+install: $(BUILD_DIR)/osx-installed
+stage: $(BUILD_DIR)/osx-staged-arm $(BUILD_DIR)/osx-staged-intel
+compile: $(BUILD_DIR)/osx-compiled-arm $(BUILD_DIR)/osx-compiled-intel
+download: build/git-$(VERSION).tar.gz build/git-manpages-$(VERSION).tar.gz
+ifdef INCLUDE_SUBTREE_DOC
+tmp/setup-verified:
+	brew install docbook xmlto asciidoc docbook-xsl
+	grep -q docbook-xsl "$(XML_CATALOG_FILES)"
+	touch "$@"
+setup: tmp/setup-verified
+else
+setup:
+endif
+clean:
+	rm -rf "$(BUILD_DIR)"/git-*/ "$(DESTDIR_arm)" "$(DESTDIR_intel)" "git-$(VERSION).pkg"
+	$(SUDO) rm -rf "$(DESTDIR)"
+	rm -f "$(BUILD_DIR)"/osx-compiled-* "$(BUILD_DIR)"/osx-staged-* "$(BUILD_DIR)"/osx-installed*
 
 vars:
-	# OSX_NAME = $(OSX_NAME)
-	# OSX_CODE = $(OSX_CODE)
-	# ARCH = $(ARCH)
-	# ARCH_CODE = $(ARCH_CODE)
-	# CFLAGS = $(CFLAGS)
-	# BUILD_CODE = $(BUILD_CODE)
+	# VERSION = $(VERSION)
 	# PREFIX = $(PREFIX)
 	# DESTDIR = $(DESTDIR)
 	# GIT_PREFIX = $(GIT_PREFIX)
 	# BUILD_DIR = $(BUILD_DIR)
-	# SDK_PATH = $(SDK_PATH)
-
-.PHONY: compile download install install-assets install-bin install-man install-subtree image package deploy reinstall setup readme
-
-.SECONDARY:
-
-/usr/local/etc/xml/catalog:
-	brew install docbook
-
-/usr/local/bin/xmlto:
-	brew install xmlto
-
-/usr/local/bin/asciidoc:
-	brew install asciidoc
+	# SUBMAKE_arm = $(SUBMAKE_arm)
+	# SUBMAKE_intel = $(SUBMAKE_intel)
+	# INCLUDE_GUI = $(INCLUDE_GUI)
+	# INCLUDE_SUBTREE_DOC = $(INCLUDE_SUBTREE_DOC)
+	# XML_CATALOG_FILES = $(XML_CATALOG_FILES)
 
 
-tmp/setup-verified: /usr/local/etc/xml/catalog /usr/local/bin/xmlto /usr/local/bin/asciidoc
-	grep -q docbook-xsl /usr/local/etc/xml/catalog && exit 0 || (echo "You need docbook-xsl installed to build docs; If it is already installed, uninstall and reinstall it"; brew install docbook-xsl)
-	touch	$@
+##### Download #####
 
-setup: tmp/setup-verified
+$(BUILD_DIR)/%.tar.gz:
+	mkdir -p "$(BUILD_DIR)"
+	curl -L -o "$(BUILD_DIR)/$*.tar.gz.working" "$(DOWNLOAD_LOCATION)/$*.tar.gz"
+	mv "$(BUILD_DIR)/$*.tar.gz.working" "$(BUILD_DIR)/$*.tar.gz"
 
-$(DESTDIR)$(GIT_PREFIX)/VERSION-$(VERSION)-$(BUILD_CODE):
-	rm -f $(BUILD_DIR)/git-$(VERSION)/osx-installed*
-	mkdir -p $(DESTDIR)$(GIT_PREFIX)
-	touch $@
+$(BUILD_DIR)/git-%/Makefile: $(BUILD_DIR)/git-$(VERSION).tar.gz
+	mkdir -p "$(BUILD_DIR)"
+	tar xzf build/git-$(VERSION).tar.gz -C "$(BUILD_DIR)"
+	mv "$(BUILD_DIR)/git-$(VERSION)" "$(BUILD_DIR)/git-$*"
+	touch "$@"
 
-build/%.tar.gz:
-	mkdir -p build
-	curl -L -o build/$*.tar.gz.working "$(DOWNLOAD_LOCATION)/$*.tar.gz"
-	mv build/$*.tar.gz.working build/$*.tar.gz
 
-$(BUILD_DIR)/git-$(VERSION)/Makefile: build/git-$(VERSION).tar.gz
-	mkdir -p $(BUILD_DIR)
-	tar xzf build/git-$(VERSION).tar.gz -C $(BUILD_DIR)
-	touch $@
+##### Compile #####
 
-$(BUILD_DIR)/git-$(VERSION)/osx-built: $(BUILD_DIR)/git-$(VERSION)/Makefile
-	[ -d $(DESTDIR)$(GIT_PREFIX) ] && $(SUDO) rm -rf $(DESTDIR) || echo ok
-	cd $(BUILD_DIR)/git-$(VERSION); $(SUBMAKE) -j $(CORES) all strip
-	touch $@
+$(BUILD_DIR)/git-%/osx-built-git: $(BUILD_DIR)/git-%/Makefile
+	cd "$(BUILD_DIR)/git-$*"; $(SUBMAKE_${*}) -j 3 all strip
+	touch "$@"
 
-$(BUILD_DIR)/git-$(VERSION)/osx-built-keychain: $(BUILD_DIR)/git-$(VERSION)/Makefile
-	cd $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain; $(SUBMAKE) CFLAGS="$(CFLAGS) -g -O2 -Wall"
-	touch $@
+$(BUILD_DIR)/git-%/osx-built-keychain: $(BUILD_DIR)/git-%/Makefile
+	cd "$(BUILD_DIR)/git-$*/contrib/credential/osxkeychain"; $(SUBMAKE_${*}) CFLAGS="$(CFLAGS_${*}) -g -O2"
+	touch "$@"
 
-$(BUILD_DIR)/git-$(VERSION)/osx-built-subtree: $(BUILD_DIR)/git-$(VERSION)/Makefile | setup
-	cd $(BUILD_DIR)/git-$(VERSION)/contrib/subtree; $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" all git-subtree.1
-	touch $@
+ifdef INCLUDE_SUBTREE_DOC
+$(BUILD_DIR)/git-%/osx-built-subtree: $(BUILD_DIR)/git-%/Makefile | setup
+	cd "$(BUILD_DIR)/git-$*/contrib/subtree"; $(SUBMAKE_${*}) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" all git-subtree.1
+else
+$(BUILD_DIR)/git-%/osx-built-subtree: $(BUILD_DIR)/git-%/Makefile
+	cd "$(BUILD_DIR)/git-$*/contrib/subtree"; $(SUBMAKE_${*}) all
+endif
+	touch "$@"
 
-$(BUILD_DIR)/git-$(VERSION)/osx-installed-subtree: $(BUILD_DIR)/git-$(VERSION)/osx-built-subtree
-	mkdir -p $(DESTDIR)
-	cd $(BUILD_DIR)/git-$(VERSION)/contrib/subtree; $(SUBMAKE) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" install install-man
-	touch $@
+$(BUILD_DIR)/osx-compiled-%: $(BUILD_DIR)/git-%/osx-built-git $(BUILD_DIR)/git-%/osx-built-keychain $(BUILD_DIR)/git-%/osx-built-subtree
+	touch "$@"
 
-$(BUILD_DIR)/git-$(VERSION)/osx-installed-assets: $(BUILD_DIR)/git-$(VERSION)/osx-installed-bin
-	mkdir -p $(DESTDIR)$(GIT_PREFIX)/etc
-	cp assets/etc/gitconfig.default $(DESTDIR)$(GIT_PREFIX)/etc/gitconfig
-	cat assets/etc/gitconfig.osxkeychain >> $(DESTDIR)$(GIT_PREFIX)/etc/gitconfig
-	cp assets/uninstall.sh $(DESTDIR)$(GIT_PREFIX)/uninstall.sh
-	sh -c "echo .DS_Store >> $(DESTDIR)$(GIT_PREFIX)/share/git-core/templates/info/exclude"
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	cd $(DESTDIR)$(PREFIX)/bin; find ../git/bin -type f -exec ln -sf {} \;
-	for man in man1 man3 man5 man7; do mkdir -p $(DESTDIR)$(PREFIX)/share/man/$$man; (cd $(DESTDIR)$(PREFIX)/share/man/$$man; ln -sf ../../../git/share/man/$$man/* ./); done
-	touch $@
 
-$(BUILD_DIR)/git-$(VERSION)/osx-installed-bin: $(BUILD_DIR)/git-$(VERSION)/osx-built $(BUILD_DIR)/git-$(VERSION)/osx-built-keychain $(DESTDIR)$(GIT_PREFIX)/VERSION-$(VERSION)-$(BUILD_CODE)
-	cd $(BUILD_DIR)/git-$(VERSION); $(SUBMAKE) INSTALL_SYMLINKS=1 install
-	cp $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain/git-credential-osxkeychain $(DESTDIR)$(GIT_PREFIX)/bin/git-credential-osxkeychain
-	mkdir -p $(DESTDIR)$(GIT_PREFIX)/contrib/completion
-	cp $(BUILD_DIR)/git-$(VERSION)/contrib/completion/git-completion.bash $(DESTDIR)$(GIT_PREFIX)/contrib/completion/
-	cp $(BUILD_DIR)/git-$(VERSION)/contrib/completion/git-completion.zsh $(DESTDIR)$(GIT_PREFIX)/contrib/completion/
-	cp $(BUILD_DIR)/git-$(VERSION)/contrib/completion/git-prompt.sh $(DESTDIR)$(GIT_PREFIX)/contrib/completion/
-	# This is needed for Git-Gui, GitK
-	mkdir -p $(DESTDIR)$(GIT_PREFIX)/lib/perl5/site_perl
-	[ ! -f $(DESTDIR)$(GIT_PREFIX)/lib/perl5/site_perl/Error.pm ] && cp $(BUILD_DIR)/git-$(VERSION)/perl/private-Error.pm $(DESTDIR)$(GIT_PREFIX)/lib/perl5/site_perl/Error.pm || echo done
-	touch $@
+##### Stage #####
 
-$(BUILD_DIR)/git-$(VERSION)/osx-installed-man: build/git-manpages-$(VERSION).tar.gz $(BUILD_DIR)/git-$(VERSION)/osx-installed-bin
-	tar xzfo build/git-manpages-$(VERSION).tar.gz -C $(DESTDIR)$(GIT_PREFIX)/share/man
-	touch $@
+$(BUILD_DIR)/git-%/osx-staged-git: $(BUILD_DIR)/git-%/osx-built-git
+	mkdir -p "$(DESTDIR_${*})$(GIT_PREFIX)"
+	cd "$(BUILD_DIR)/git-$*"; $(SUBMAKE_${*}) INSTALL_SYMLINKS=1 install
+	touch "$@"
 
-$(BUILD_DIR)/git-$(VERSION)/osx-installed: $(BUILD_DIR)/git-$(VERSION)/osx-installed-bin $(BUILD_DIR)/git-$(VERSION)/osx-installed-man $(BUILD_DIR)/git-$(VERSION)/osx-installed-assets $(BUILD_DIR)/git-$(VERSION)/osx-installed-subtree
+$(BUILD_DIR)/git-%/osx-staged-keychain: $(BUILD_DIR)/git-%/osx-built-keychain
+	mkdir -p "$(DESTDIR_${*})$(GIT_PREFIX)"
+	cp "$(BUILD_DIR)/git-$*/contrib/credential/osxkeychain/git-credential-osxkeychain" "$(DESTDIR_${*})$(GIT_PREFIX)/bin/git-credential-osxkeychain"
+	touch "$@"
+
+$(BUILD_DIR)/git-%/osx-staged-subtree: $(BUILD_DIR)/git-%/osx-built-subtree
+	mkdir -p "$(DESTDIR_${*})$(GIT_PREFIX)"
+ifdef INCLUDE_SUBTREE_DOC
+	cd "$(BUILD_DIR)/git-$*/contrib/subtree"; $(SUBMAKE_${*}) XML_CATALOG_FILES="$(XML_CATALOG_FILES)" install install-man
+else
+	cd "$(BUILD_DIR)/git-$*/contrib/subtree"; $(SUBMAKE_${*}) install
+endif
+	touch "$@"
+
+$(BUILD_DIR)/osx-staged-%: $(BUILD_DIR)/git-%/osx-staged-git $(BUILD_DIR)/git-%/osx-staged-keychain $(BUILD_DIR)/git-%/osx-staged-subtree
+	touch "$@"
+
+
+##### Install #####
+
+$(BUILD_DIR)/osx-installed-bin: $(BUILD_DIR)/osx-staged-arm $(BUILD_DIR)/osx-staged-intel
+	mkdir -p "$(DESTDIR)$(GIT_PREFIX)"
+	# recreate directory structure and add in all symlinks
+	cd "$(DESTDIR_arm)"; find . -type d -exec mkdir -p "$(DESTDIR)/{}" \;
+	cd "$(DESTDIR_arm)"; find . -type l -exec cp -fPR "{}" "$(DESTDIR)/{}" \;
+	# look at all other files: copy non-executables, merge executables
+	cd "$(DESTDIR_arm)"; find . -type f -exec bash -c '[[ "$$(file -b "{}")" == "Mach-O 64-bit executable arm64" ]]' \; -exec lipo -create -output "$(DESTDIR)/{}" "$(DESTDIR_intel)/{}" "$(DESTDIR_arm)/{}" \;
+	cd "$(DESTDIR_arm)"; find . -type f -exec bash -c '[[ "$$(file -b "{}")" != "Mach-O 64-bit executable arm64" ]]' \; -exec cp -f "$(DESTDIR_arm)/{}" "$(DESTDIR)/{}" \;
+	touch "$@"
+
+$(BUILD_DIR)/osx-installed-man: build/git-manpages-$(VERSION).tar.gz
+	mkdir -p "$(DESTDIR)$(GIT_PREFIX)/share/man"
+	tar xzfo "build/git-manpages-$(VERSION).tar.gz" -C "$(DESTDIR)$(GIT_PREFIX)/share/man"
+	touch "$@"
+
+$(BUILD_DIR)/osx-installed-assets: $(BUILD_DIR)/osx-installed-bin $(BUILD_DIR)/osx-installed-man
+	mkdir -p "$(DESTDIR)$(GIT_PREFIX)/etc"
+	cat assets/etc/gitconfig.default assets/etc/gitconfig.osxkeychain > "$(DESTDIR)$(GIT_PREFIX)/etc/gitconfig"
+	cp -f assets/uninstall "$(DESTDIR)$(GIT_PREFIX)/uninstall"
+	echo .DS_Store >> "$(DESTDIR)$(GIT_PREFIX)/share/git-core/templates/info/exclude"
+	mkdir -p "$(DESTDIR)$(GIT_PREFIX)/contrib"
+	cp -r "$(BUILD_DIR)/git-arm/contrib/completion/" "$(DESTDIR)$(GIT_PREFIX)/contrib/completion/"
+ifdef INCLUDE_GUI
+	mkdir -p "$(DESTDIR)$(GIT_PREFIX)/lib/perl5/site_perl"
+	cp -f "$(BUILD_DIR)/git-arm/perl/FromCPAN/Error.pm" "$(DESTDIR)$(GIT_PREFIX)/lib/perl5/site_perl/Error.pm"
+endif
+	mkdir -p "$(DESTDIR)$(PREFIX)/bin"
+	cd "$(DESTDIR)$(PREFIX)/bin"; find ../git/bin -type f -exec ln -sf {} \;
+	for man in $(ls "$(DESTDIR)$(GIT_PREFIX)/share/man/"); do mkdir -p "$(DESTDIR)$(PREFIX)/share/man/$$man"; (cd "$(DESTDIR)$(PREFIX)/share/man/$$man"; ln -sf ../../../git/share/man/$$man/* ./); done
+	touch "$@"
+
+$(BUILD_DIR)/osx-installed: $(BUILD_DIR)/osx-installed-bin $(BUILD_DIR)/osx-installed-man $(BUILD_DIR)/osx-installed-assets
 	$(SUDO) chown -R root:wheel $(DESTDIR)$(GIT_PREFIX)
 	find $(DESTDIR)$(GIT_PREFIX) -type d -exec chmod ugo+rx {} \;
 	find $(DESTDIR)$(GIT_PREFIX) -type f -exec chmod ugo+r {} \;
-	touch $@
-
-$(BUILD_DIR)/git-$(VERSION)/osx-built-assert-$(ARCH_CODE): $(BUILD_DIR)/git-$(VERSION)/osx-built
-ifeq ("$(ARCH_CODE)", "universal")
-	File $(BUILD_DIR)/git-$(VERSION)/git
-	File $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain/git-credential-osxkeychain
-else
-	[ "$$(File $(BUILD_DIR)/git-$(VERSION)/git | cut -f 5 -d' ')" == "$(ARCH_CODE)" ]
-	[ "$$(File $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain/git-credential-osxkeychain | cut -f 5 -d' ')" == "$(ARCH_CODE)" ]
-endif
-	touch $@
-
-
-disk-image/VERSION-$(VERSION)-$(ARCH_CODE)-$(OSX_CODE):
-	rm -f disk-image/*.pkg disk-image/VERSION-* disk-image/.DS_Store
 	touch "$@"
 
-disk-image/git-$(VERSION)-$(BUILD_CODE).pkg: disk-image/VERSION-$(VERSION)-$(ARCH_CODE)-$(OSX_CODE) $(DESTDIR)$(GIT_PREFIX)/VERSION-$(VERSION)-$(BUILD_CODE) $(BUILD_DIR)/git-$(VERSION)/osx-installed $(BUILD_DIR)/git-$(VERSION)/osx-built-assert-$(ARCH_CODE)
-	pkgbuild --identifier com.git.pkg --version $(VERSION) --root $(DESTDIR)$(PREFIX) --install-location $(PREFIX) --component-plist ./git-components.plist disk-image/git-$(VERSION)-$(BUILD_CODE).pkg
 
-git-%-$(BUILD_CODE).dmg: disk-image/git-%-$(BUILD_CODE).pkg
-	rm -f git-$(VERSION)-$(BUILD_CODE)*.dmg
-	hdiutil create git-$(VERSION)-$(BUILD_CODE).uncompressed.dmg -fs HFS+ -srcfolder disk-image -volname "Git $(VERSION) $(OSX_NAME) Intel $(ARCH)" -ov
-	hdiutil convert -format UDZO -o $@ git-$(VERSION)-$(BUILD_CODE).uncompressed.dmg
-	rm -f git-$(VERSION)-$(BUILD_CODE).uncompressed.dmg
+##### Package #####
 
-tmp/deployed-%-$(BUILD_CODE): git-%-$(BUILD_CODE).dmg
-	mkdir -p tmp
-	scp git-$(VERSION)-$(BUILD_CODE).dmg timcharper@frs.sourceforge.net:/home/pfs/project/git-osx-installer | tee $@.working
-	mv $@.working $@
-
-package: disk-image/git-$(VERSION)-$(BUILD_CODE).pkg
-install-assets: $(BUILD_DIR)/git-$(VERSION)/osx-installed-assets
-install-bin: $(BUILD_DIR)/git-$(VERSION)/osx-installed-bin
-install-man: $(BUILD_DIR)/git-$(VERSION)/osx-installed-man
-install-subtree: $(BUILD_DIR)/git-$(VERSION)/osx-installed-subtree
-
-install: $(BUILD_DIR)/git-$(VERSION)/osx-installed
-
-download: build/git-$(VERSION).tar.gz build/git-manpages-$(VERSION).tar.gz
-
-compile: $(BUILD_DIR)/git-$(VERSION)/osx-built $(BUILD_DIR)/git-$(VERSION)/osx-built-keychain $(BUILD_DIR)/git-$(VERSION)/osx-built-subtree
-
-deploy: tmp/deployed-$(VERSION)-$(BUILD_CODE)
-
-tmp/deployed-readme: README.md
-	scp README.md timcharper@frs.sourceforge.net:/home/pfs/project/git-osx-installer | tee $@.working
-	mv $@.working $@
-
-readme: tmp/deployed-readme
-
-
-clean:
-	$(SUDO) rm -rf $(BUILD_DIR)/git-$(VERSION)/osx-* $(DESTDIR)
-	[ -d $(BUILD_DIR)/git-$(VERSION) ] && cd $(BUILD_DIR)/git-$(VERSION) && $(SUBMAKE) clean || echo done
-	[ -d $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain ] && cd $(BUILD_DIR)/git-$(VERSION)/contrib/credential/osxkeychain && $(SUBMAKE) clean || echo done
-	[ -d $(BUILD_DIR)/git-$(VERSION)/contrib/subtree ] && cd $(BUILD_DIR)/git-$(VERSION)/contrib/subtree && $(SUBMAKE) clean || echo done
-
-reinstall:
-	$(SUDO) rm -rf /usr/local/git/VERSION-*
-	rm -f $(BUILD_DIR)/git-$(VERSION)/osx-installed*
-	$(SUBMAKE) install
-
-image: git-$(VERSION)-$(BUILD_CODE).dmg
+git-$(VERSION).pkg: $(BUILD_DIR)/osx-installed
+	pkgbuild --identifier com.git.pkg --version $(VERSION) --root "$(DESTDIR)$(PREFIX)" --install-location "$(PREFIX)" $(COMP_PLIST) git-$(VERSION).pkg

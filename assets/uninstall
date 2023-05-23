@@ -1,0 +1,34 @@
+#!/bin/bash -e
+
+INSTALL_DIR="/usr/local/git"
+BIN_DIR="/usr/local/bin"
+MAN_DIR="/usr/local/share/man"
+PKG_ID="com.git.pkg"
+
+if [ ! -r "$INSTALL_DIR" ]; then
+  echo "Git doesn't appear to be installed via this installer. Aborted."
+  exit 1
+fi
+
+if [ "$1" != "--yes" ]; then
+  echo "This will uninstall git by removing $INSTALL_DIR and symlinks in $BIN_DIR and $MAN_DIR"
+  printf "Type 'yes' if you are sure you wish to continue: "
+  read response
+  if [ "$response" != "yes" ]; then
+    echo "Aborted"
+    exit 1
+  fi
+fi
+
+# Remove the symlinks to /usr/local/git/
+sudo find "$BIN_DIR" -type l -exec bash -c '[[ "$(realpath "{}")" == "'$INSTALL_DIR'/"* ]]' \; -delete;
+sudo find "$MAN_DIR" -type l -exec bash -c '[[ "$(realpath "{}")" == "'$INSTALL_DIR'/"* ]]' \; -delete;
+
+# Remove the main part
+sudo rm -rf "$INSTALL_DIR"
+
+# Forget receipts
+pkgutil --packages | grep "^$PKG_ID" | xargs -I {} sudo pkgutil --forget {}
+
+echo "Uninstalled"
+exit 0
